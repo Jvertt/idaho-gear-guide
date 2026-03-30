@@ -20,6 +20,12 @@ export default {
         mono: ['IBM Plex Mono', 'monospace'],
         body: ['Libre Franklin', 'sans-serif'],
       },
+      transitionTimingFunction: {
+        spring: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      },
+      transitionDuration: {
+        400: '400ms',
+      },
     },
   },
   plugins: [],

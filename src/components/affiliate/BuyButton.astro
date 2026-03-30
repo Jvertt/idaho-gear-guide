@@ -1,5 +1,5 @@
 ---
-import { getCloakedUrl, getAffiliateLink, formatPrice } from '../../utils/affiliates';
+import { getCloakedUrl, getAffiliateLink, formatPrice, isAffiliateAvailable, amazonSearchUrl } from '../../utils/affiliates';
 
 export interface Props {
   affiliateId: string;
@@ -12,19 +12,20 @@ const { affiliateId, label, variant = 'primary', showPrice = true } = Astro.prop
 
 const affiliate = getAffiliateLink(affiliateId);
 const url = getCloakedUrl(affiliateId);
+const inStock = affiliate ? isAffiliateAvailable(affiliate) : false;
 
-const defaultLabel = affiliate?.program === 'amazon' ? 'Check Price on Amazon' : 'Check Price';
+const defaultLabel = affiliate?.program === 'amazon' ? 'View on Amazon' : 'Check Price';
 
-const baseClasses = 'inline-flex items-center justify-center gap-2 font-mono text-sm font-semibold tracking-wide uppercase transition-all duration-200 rounded-lg';
+const baseClasses = 'inline-flex items-center justify-center gap-2 font-body text-sm font-semibold transition-all duration-300 rounded-lg w-full active:scale-[0.97]';
 
 const variantClasses = {
-  primary: 'bg-amber hover:bg-gold text-pine px-6 py-3 shadow-sm hover:shadow-md',
+  primary: 'bg-pine hover:bg-forest text-cream px-6 py-3',
   secondary: 'bg-forest hover:bg-sage text-cream px-5 py-2.5 border border-sage/30',
-  compact: 'bg-amber hover:bg-gold text-pine px-4 py-2 text-xs',
+  compact: 'bg-pine hover:bg-forest text-cream px-4 py-2 text-xs',
 };
 ---
 
-{affiliate && (
+{affiliate && inStock && (
   <div>
     <a
       href={url}
@@ -34,18 +35,33 @@ const variantClasses = {
       data-affiliate-id={affiliateId}
       onclick={`console.log('[affiliate-click] ${affiliateId}')`}
     >
-      <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M15.93 17.09c-2.94 2.16-7.2 3.32-10.87 3.32-5.15 0-9.78-1.9-13.29-5.06-.28-.25-.03-.59.3-.4 3.78 2.2 8.46 3.53 13.29 3.53 3.26 0 6.85-.68 10.15-2.07.5-.21.92.33.42.68z" transform="translate(5.5 1)" />
-        <path d="M17.36 15.44c-.37-.48-2.48-.23-3.43-.12-.29.03-.33-.22-.07-.4 1.68-1.18 4.43-.84 4.75-.44.32.4-.08 3.15-1.66 4.47-.24.2-.47.1-.37-.17.35-.88 1.15-2.86.78-3.34z" transform="translate(5.5 1)" />
-      </svg>
       {label || defaultLabel}
       {showPrice && variant !== 'compact' && (
-        <span class="opacity-80">— {formatPrice(affiliate.price)}</span>
+        <span class="opacity-70">— {formatPrice(affiliate.price)}</span>
       )}
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      <svg class="w-4 h-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
       </svg>
     </a>
-    <p class="text-xs text-stone-400 mt-1">As an Amazon Associate I earn from qualifying purchases.</p>
+    <p class="text-[10px] text-stone/40 mt-2 text-center">Affiliate link — commission earned</p>
+  </div>
+)}
+{affiliate && !inStock && (
+  <div class="text-center">
+    <p class="font-body text-sm text-stone mb-3">
+      We no longer link to this exact SKU (discontinued or unavailable). Try similar in-stock options below or search Amazon.
+    </p>
+    <a
+      href={amazonSearchUrl(affiliate.productName)}
+      class:list={[baseClasses, variantClasses[variant]]}
+      target="_blank"
+      rel="nofollow noopener sponsored"
+    >
+      Search Amazon for similar gear
+      <svg class="w-4 h-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+      </svg>
+    </a>
+    <p class="text-[10px] text-stone/40 mt-2">Affiliate search — commission may apply</p>
   </div>
 )}

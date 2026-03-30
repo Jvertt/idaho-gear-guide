@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/affiliate/ProductCard.astro';
+import { filterAvailableAffiliateIds } from '../data/affiliates';
+import { buildBreadcrumbSchema } from '../utils/schema';
+
+const breadcrumbs = buildBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Explore Gear', url: '/explore-gear' },
+]);
+
+const sections: { title: string; blurb: string; ids: string[] }[] = [
+  {
+    title: 'Hydration, reservoirs & filtration',
+    blurb: 'Stay hydrated on Panhandle trails and treat water from alpine streams when you are far from the trailhead.',
+    ids: [
+      'hydro-flask-32-wide-chug',
+      'nalgene-sustain-32',
+      'platypus-big-zip-3l',
+      'sawyer-squeeze-filter',
+    ],
+  },
+  {
+    title: 'Camp stoves & cooking',
+    blurb: 'From ultralight canister stoves to integrated boil systems for quick meals after a long day outside.',
+    ids: ['msr-pocketrocket-2', 'jetboil-flash'],
+  },
+  {
+    title: 'Sleep, lighting & dry storage',
+    blurb: 'Foam pads, headlamps, and dry bags for unpredictable Idaho weather and early alpine starts.',
+    ids: ['thermarest-z-lite-sol', 'black-diamond-spot-400', 'sea-to-summit-ultra-sil-8l'],
+  },
+  {
+    title: 'On-water safety & traction',
+    blurb: 'PFDs for paddlesports and microspikes when forest roads and trails ice over.',
+    ids: ['onyx-movevent-pfd', 'kahtoola-microspikes'],
+  },
+  {
+    title: 'Bear country, tools & optics',
+    blurb: 'Food protection, a full-size multi-tool, glass for wildlife, and GPS when the trail gets faint.',
+    ids: ['ursack-major', 'leatherman-wave-plus', 'vortex-crossfire-hd-10x42', 'garmin-etrex-se'],
+  },
+  {
+    title: 'Foot comfort',
+    blurb: 'Merino socks that hold up to long mileage in boots you already trust.',
+    ids: ['smartwool-hike-light-crew'],
+  },
+];
+
+const sectionData = sections.map((s) => ({
+  ...s,
+  ids: filterAvailableAffiliateIds(s.ids),
+}));
+---
+
+<BaseLayout
+  title="Explore More Outdoor Gear for Idaho — Amazon Picks"
+  description="Extra curated Amazon affiliate picks for North Idaho: hydration, water filters, stoves, sleep kits, PFDs, optics, GPS, and more — built to complement our full reviews."
+  canonical="https://idahogearguide.com/explore-gear"
+  jsonLd={breadcrumbs}
+>
+  <article class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <header class="text-center mb-14 max-w-3xl mx-auto reveal reveal-up reveal-duration-600">
+      <span class="font-mono text-xs text-amber uppercase tracking-[0.15em]">Amazon Associates</span>
+      <h1 class="font-display text-4xl text-ink font-bold mt-2 mb-4">Explore More Gear for North Idaho</h1>
+      <p class="font-body text-lg text-stone leading-relaxed">
+        Beyond our <a href="/gear-picks" class="text-pine underline hover:text-amber">main gear picks</a>, here is a broader set of
+        products we link directly on Amazon. Each item is chosen for real use cases in the Idaho panhandle — lakes, rivers, forest
+        trails, and shoulder-season weather. Disclosure: we may earn a commission from qualifying purchases.
+      </p>
+    </header>
+
+    {sectionData.map(
+      (section) =>
+        section.ids.length > 0 && (
+          <section class="mb-16 reveal reveal-up reveal-duration-600">
+            <h2 class="font-display text-2xl text-ink font-bold mb-2 pb-2 border-b border-mist">{section.title}</h2>
+            <p class="font-body text-stone text-sm mb-6 max-w-3xl">{section.blurb}</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger">
+              {section.ids.map((id) => (
+                <div class="reveal reveal-scale reveal-duration-500">
+                  <ProductCard affiliateId={id} showSpecs={false} />
+                </div>
+              ))}
+            </div>
+          </section>
+        ),
+    )}
+
+    <footer class="mt-16 pt-10 border-t border-mist/80 text-center">
+      <p class="font-body text-sm text-stone mb-4 max-w-2xl mx-auto">
+        Looking for long-form testing? Start with our{' '}
+        <a href="/gear-picks" class="text-pine font-semibold hover:text-amber underline">gear picks hub</a> and{' '}
+        <a href="/reviews/yeti-tundra-45" class="text-pine font-semibold hover:text-amber underline">gear reviews</a>.
+      </p>
+    </footer>
+  </article>
+</BaseLayout>

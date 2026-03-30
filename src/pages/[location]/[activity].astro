@@ -8,6 +8,7 @@ import EmailCapture from '../../components/email/EmailCapture.astro';
 import { locations, type Location } from '../../data/locations';
 import { getActivityBySlug, type Activity } from '../../data/activities';
 import { generateActivityPageSEO } from '../../utils/seo';
+import { filterAvailableAffiliateIds } from '../../data/affiliates';
 
 export function getStaticPaths() {
   const paths: { params: { location: string; activity: string }; props: { location: Location; activity: Activity } }[] = [];
@@ -114,7 +115,12 @@ const gearMap: Record<string, GearPickSet> = {
   },
 };
 
-const picks = gearMap[activity.slug] || gearMap['hiking'];
+const rawPicks = gearMap[activity.slug] || gearMap['hiking'];
+const picks = {
+  top3: filterAvailableAffiliateIds(rawPicks.top3),
+  full: filterAvailableAffiliateIds(rawPicks.full),
+  comparison: filterAvailableAffiliateIds(rawPicks.comparison),
+};
 
 const localTipsMap: Record<string, Record<string, string[]>> = {
   'coeur-dalene': {
@@ -232,7 +238,7 @@ function getLocalContext(): string {
   breadcrumbs={breadcrumbs}
 >
   <!-- Hero -->
-  <div class="mb-8">
+  <div class="mb-8 reveal reveal-up reveal-duration-600">
     <h1 class="font-display text-3xl md:text-4xl text-ink font-bold mb-3">
       Best {activity.name} Gear for {location.name} ({year})
     </h1>
@@ -240,17 +246,21 @@ function getLocalContext(): string {
   </div>
 
   <!-- Quick Answer Box -->
-  <div class="bg-cream border-2 border-amber/30 rounded-xl p-6 mb-10">
-    <h2 class="font-mono text-xs text-amber uppercase tracking-wider mb-4">Quick Answer — Our Top 3 Picks</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {picks.top3.map((id: string) => (
-        <ProductCard affiliateId={id} tier={undefined} />
-      ))}
+  {picks.top3.length > 0 && (
+    <div class="bg-cream border-2 border-amber/30 rounded-xl p-6 mb-10 reveal reveal-scale reveal-duration-600">
+      <h2 class="font-mono text-xs text-amber uppercase tracking-wider mb-4">Quick Answer — Our Top 3 Picks</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 reveal-stagger">
+        {picks.top3.map((id: string) => (
+          <div class="reveal reveal-up reveal-duration-500">
+            <ProductCard affiliateId={id} tier={undefined} />
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
+  )}
 
   <!-- Local Context -->
-  <section class="mb-10">
+  <section class="mb-10 reveal reveal-up reveal-duration-500">
     <h2 class="font-display text-2xl text-ink font-bold mb-4">{activity.name} at {location.name}</h2>
     <p class="font-body text-ink/85 leading-relaxed">
       {getLocalContext()}
@@ -258,18 +268,22 @@ function getLocalContext(): string {
   </section>
 
   <!-- Full Gear Recommendations -->
-  <section class="mb-10">
-    <h2 class="font-display text-2xl text-ink font-bold mb-6">Full Gear Recommendations</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {picks.full.map((id: string) => (
-        <ProductCard affiliateId={id} showSpecs={true} />
-      ))}
-    </div>
-  </section>
+  {picks.full.length > 0 && (
+    <section class="mb-10 reveal reveal-up reveal-duration-600">
+      <h2 class="font-display text-2xl text-ink font-bold mb-6">Full Gear Recommendations</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 reveal-stagger">
+        {picks.full.map((id: string) => (
+          <div class="reveal reveal-scale reveal-duration-500">
+            <ProductCard affiliateId={id} showSpecs={true} />
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
 
   <!-- Comparison Table -->
   {picks.comparison.length >= 2 && (
-    <section class="mb-10">
+    <section class="mb-10 reveal reveal-up reveal-duration-600">
       <h2 class="font-display text-2xl text-ink font-bold mb-6">Head-to-Head Comparison</h2>
       <ComparisonTable affiliateIds={picks.comparison} />
     </section>

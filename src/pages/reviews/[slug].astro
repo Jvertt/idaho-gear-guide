@@ -4,7 +4,8 @@ import ReviewLayout from '../../layouts/ReviewLayout.astro';
 import VerdictBox from '../../components/affiliate/VerdictBox.astro';
 import BuyButton from '../../components/affiliate/BuyButton.astro';
 import ProductCard from '../../components/affiliate/ProductCard.astro';
-import { getAffiliateLink, formatPrice } from '../../utils/affiliates';
+import { getAffiliateLink, formatPrice, isAffiliateAvailable } from '../../utils/affiliates';
+import { filterAvailableAffiliateIds } from '../../data/affiliates';
 import { getProductByAffiliateId } from '../../data/products';
 import { generateReviewSEO } from '../../utils/seo';
 import { buildProductSchema, buildReviewSchema } from '../../utils/schema';
@@ -45,6 +46,8 @@ const reviewSchema = buildReviewSchema(
   { verdict: product.verdict, datePublished: review.data.publishDate }
 );
 
+const alternativeIds = filterAvailableAffiliateIds(product.alternatives);
+
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Reviews', url: '/gear-picks' },
@@ -57,6 +60,14 @@ const breadcrumbs = [
   breadcrumbs={breadcrumbs}
   jsonLd={[productSchema, reviewSchema]}
 >
+  {!isAffiliateAvailable(affiliate) && (
+    <div class="mb-6 p-4 bg-amber/10 border border-amber/25 rounded-xl">
+      <p class="font-body text-sm text-ink/85 leading-relaxed">
+        We have marked this exact model as unavailable or discontinued. The write-up below is still useful for what to look for; use the alternatives or Amazon search for current SKUs.
+      </p>
+    </div>
+  )}
+
   <VerdictBox affiliateId={review.data.affiliateId} score={product.rating} />
 
   <!-- Specs Table -->
@@ -111,11 +122,11 @@ const breadcrumbs = [
   </div>
 
   <!-- Alternatives -->
-  {product.alternatives.length > 0 && (
+  {alternativeIds.length > 0 && (
     <section class="mt-12">
       <h2 class="font-display text-2xl text-ink font-bold mb-6">Alternatives to Consider</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {product.alternatives.map((altId) => (
+        {alternativeIds.map((altId) => (
           <ProductCard affiliateId={altId} showSpecs={true} />
         ))}
       </div>

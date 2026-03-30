@@ -22,7 +22,7 @@ const headingColor = variant === 'banner' ? 'text-cream' : 'text-ink';
 const textColor = variant === 'banner' ? 'text-sage' : 'text-ink/70';
 ---
 
-<section class:list={[variantClasses[variant], 'my-8']}>
+<section class:list={[variantClasses[variant], 'my-8 reveal reveal-up reveal-duration-600']}>
   <div class="max-w-lg mx-auto text-center">
     <span class="text-2xl mb-2 block">🎒</span>
     <h3 class:list={['font-display text-xl font-bold mb-2', headingColor]}>
@@ -49,7 +49,7 @@ const textColor = variant === 'banner' ? 'text-sage' : 'text-ink/70';
       />
       <button
         type="submit"
-        class="font-mono text-sm font-semibold uppercase tracking-wide bg-amber hover:bg-gold text-pine px-6 py-3 rounded-lg transition-colors"
+        class="font-mono text-sm font-semibold uppercase tracking-wide bg-amber hover:bg-gold text-pine px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber/20 active:scale-[0.97]"
       >
         Send It
       </button>

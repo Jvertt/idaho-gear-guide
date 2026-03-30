@@ -1,5 +1,13 @@
-import { affiliateLinks, ACTIVE_PROGRAMS } from '../data/affiliates';
+import {
+  affiliateLinks,
+  ACTIVE_PROGRAMS,
+  isAffiliateAvailable,
+  filterAvailableAffiliateIds,
+  amazonSearchUrl,
+} from '../data/affiliates';
 import type { AffiliateLink } from '../data/affiliates';
+
+export { isAffiliateAvailable, filterAvailableAffiliateIds, amazonSearchUrl };
 
 // TODO: Re-enable internal cloaking via /go/[id] when multi-program support returns
 // For now all links go directly to Amazon with the associate tag

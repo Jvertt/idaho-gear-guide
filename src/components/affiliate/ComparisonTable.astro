@@ -1,6 +1,6 @@
 ---
 import BuyButton from './BuyButton.astro';
-import { getAffiliateLink, formatPrice, getPriceRangeLabel } from '../../utils/affiliates';
+import { getAffiliateLink, formatPrice, getPriceRangeLabel, filterAvailableAffiliateIds } from '../../utils/affiliates';
 import { getProductByAffiliateId } from '../../data/products';
 
 export interface Props {
@@ -10,7 +10,9 @@ export interface Props {
 
 const { affiliateIds, categories } = Astro.props;
 
-const items = affiliateIds.map((id) => ({
+const ids = filterAvailableAffiliateIds(affiliateIds);
+
+const items = ids.map((id) => ({
   affiliate: getAffiliateLink(id),
   product: getProductByAffiliateId(id),
 })).filter((item) => item.affiliate && item.product);
@@ -22,6 +24,9 @@ const specKeys = categories || (items.length > 0
 const bestValueIndex = items.findIndex((item) => item.affiliate?.priceRange === 'mid');
 ---
 
+{items.length === 0 ? (
+  <p class="font-body text-sm text-stone py-4">No in-stock picks in this comparison right now — we remove discontinued SKUs from the table.</p>
+) : (
 <div class="overflow-x-auto -mx-4 sm:mx-0">
   <table class="w-full min-w-[600px] border-collapse">
     <thead>
@@ -110,3 +115,4 @@ const bestValueIndex = items.findIndex((item) => item.affiliate?.priceRange === 
     </tbody>
   </table>
 </div>
+)}

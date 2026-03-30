@@ -1,7 +1,8 @@
 ---
 import BuyButton from './BuyButton.astro';
-import { getAffiliateLink, getPriceRangeLabel, formatPrice } from '../../utils/affiliates';
+import { getAffiliateLink, formatPrice, isAffiliateAvailable } from '../../utils/affiliates';
 import { getProductByAffiliateId } from '../../data/products';
+import { amazonGeneratedImages } from '../../data/amazon-images.generated';
 
 export interface Props {
   affiliateId: string;
@@ -14,59 +15,238 @@ const { affiliateId, showSpecs = false, tier } = Astro.props;
 const affiliate = getAffiliateLink(affiliateId);
 const product = getProductByAffiliateId(affiliateId);
 
-if (!affiliate || !product) return;
+if (!affiliate || !isAffiliateAvailable(affiliate)) return;
+
+const cardBullets = product
+  ? product.pros.slice(0, 3)
+  : (affiliate.listingHighlights?.slice(0, 3) ?? []);
+if (cardBullets.length === 0) return;
 
 const displayTier = tier || affiliate.priceRange;
-const tierColors = {
-  budget: 'bg-sage/20 text-sage border-sage/30',
-  mid: 'bg-gold/20 text-gold border-gold/30',
-  premium: 'bg-amber/20 text-amber border-amber/30',
+const tierStyles = {
+  budget: { bg: 'bg-sage/10', text: 'text-sage', border: 'border-sage/20', label: 'Budget Pick' },
+  mid: { bg: 'bg-amber/8', text: 'text-amber', border: 'border-amber/20', label: 'Best Value' },
+  premium: { bg: 'bg-pine/5', text: 'text-pine', border: 'border-pine/15', label: 'Premium' },
 };
+const tierStyle = tierStyles[displayTier];
 
-const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(product.rating) ? '★' : '☆').join('');
+const fullStars = product ? Math.floor(product.rating) : 4;
+const hasHalf = product ? product.rating % 1 >= 0.3 : true;
+
+const generated = amazonGeneratedImages[affiliate.id];
+const rawList: string[] =
+  affiliate.images && affiliate.images.length > 0
+    ? affiliate.images
+    : affiliate.image
+      ? [affiliate.image]
+      : generated && generated.length > 0
+        ? generated
+        : [];
+
+const imageList = rawList.map((s) => s.trim()).filter((s) => s.length > 0);
+
+const hasImages = imageList.length > 0;
+const showCarousel = imageList.length > 1;
+
+const fallbackPhotoClass =
+  'product-card-photo-fallback hidden w-full h-48 flex flex-col items-center justify-center gap-2 p-6 bg-mist/25 text-stone/55';
 ---
 
-<div class="bg-white border border-mist rounded-xl p-5 hover:border-sage/50 transition-colors">
-  <div class="flex items-start justify-between gap-3 mb-3">
-    <div>
-      <span class:list={['font-mono text-xs px-2 py-0.5 rounded-full border', tierColors[displayTier]]}>
-        {getPriceRangeLabel(displayTier)}
-      </span>
-    </div>
-    <span class="font-display text-lg font-bold text-pine">{formatPrice(affiliate.price)}</span>
-  </div>
+<div class="card-lift group bg-white rounded-2xl border border-mist/80 shadow-sm flex flex-col h-full overflow-hidden">
 
-  <h3 class="font-display text-lg text-ink font-semibold mb-2 leading-snug">{affiliate.productName}</h3>
-
-  <div class="flex items-center gap-1 mb-3">
-    <span class="text-amber text-sm tracking-wider">{stars}</span>
-    <span class="font-mono text-xs text-stone">{product.rating}/5</span>
-  </div>
-
-  <ul class="space-y-1 mb-4">
-    {product.pros.slice(0, 3).map((pro) => (
-      <li class="flex items-start gap-2 text-sm font-body text-ink/80">
-        <span class="text-sage mt-0.5 flex-shrink-0">✓</span>
-        <span>{pro}</span>
-      </li>
-    ))}
-  </ul>
-
-  {showSpecs && (
-    <div class="border-t border-mist pt-3 mb-4">
-      <dl class="grid grid-cols-2 gap-x-4 gap-y-1">
-        {Object.entries(product.specs).slice(0, 4).map(([key, value]) => (
-          <div class="flex flex-col">
-            <dt class="font-mono text-xs text-stone uppercase">{key}</dt>
-            <dd class="font-body text-sm text-ink">{value}</dd>
+  {hasImages && (
+    <div class="relative bg-white overflow-hidden min-h-[12rem]">
+      {!showCarousel && (
+        <div class="relative w-full">
+          <img
+            src={imageList[0]}
+            alt=""
+            role="presentation"
+            class="product-card-photo w-full h-48 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div class={fallbackPhotoClass} aria-hidden="true">
+            <svg class="w-10 h-10 text-stone/35" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+            </svg>
+            <span class="font-mono text-[11px] uppercase tracking-wider">No photo</span>
           </div>
-        ))}
-      </dl>
+        </div>
+      )}
+
+      {showCarousel && (
+        <div class="relative" data-product-carousel>
+          <div
+            class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            data-carousel-track
+            aria-roledescription="carousel"
+            aria-label={`${affiliate.productName} photos`}
+          >
+            {imageList.map((src, i) => (
+              <div class="relative shrink-0 w-full snap-center">
+                <img
+                  src={src}
+                  alt=""
+                  role="presentation"
+                  class="product-card-photo w-full h-48 object-contain p-4 group-hover:scale-[1.02] transition-transform duration-500"
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  draggable="false"
+                />
+                <div class={fallbackPhotoClass} aria-hidden="true">
+                  <svg class="w-10 h-10 text-stone/35" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                  </svg>
+                  <span class="font-mono text-[11px] uppercase tracking-wider">No photo</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div class="flex justify-center gap-1.5 pb-2.5 pt-0.5" data-carousel-dots>
+            {imageList.map((_, i) => (
+              <button
+                type="button"
+                class="carousel-dot h-1.5 w-1.5 shrink-0 rounded-full bg-stone/25 hover:bg-stone/45 transition-all duration-200"
+                data-carousel-dot
+                data-index={i}
+                aria-label={`Show photo ${i + 1}`}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="absolute top-3 left-3 pointer-events-none">
+        <span class:list={['font-mono text-[10px] font-medium tracking-widest uppercase px-2.5 py-1 rounded-md border backdrop-blur-sm', tierStyle.bg, tierStyle.text, tierStyle.border]}>
+          {tierStyle.label}
+        </span>
+      </div>
+      <div class="absolute top-3 right-3 pointer-events-none">
+        <span class="font-display text-xl font-bold text-ink bg-white/80 backdrop-blur-sm rounded-lg px-2.5 py-1">{formatPrice(affiliate.price)}</span>
+      </div>
     </div>
   )}
 
-  <div class="flex items-center gap-3">
+  <div class:list={['px-6 pb-4 flex-1 flex flex-col', hasImages ? 'pt-4' : 'pt-6']}>
+    {!hasImages && (
+      <div class="flex items-start justify-between gap-3 mb-4">
+        <span class:list={['font-mono text-[10px] font-medium tracking-widest uppercase px-2.5 py-1 rounded-md border', tierStyle.bg, tierStyle.text, tierStyle.border]}>
+          {tierStyle.label}
+        </span>
+        <span class="font-display text-2xl font-bold text-ink tracking-tight shrink-0">{formatPrice(affiliate.price)}</span>
+      </div>
+    )}
+
+    <h3 class="font-display text-base font-bold text-ink leading-snug mb-2">{affiliate.productName}</h3>
+
+    <div class="flex items-center gap-1.5 mb-3">
+      {product ? (
+        <>
+          <div class="flex items-center gap-px">
+            {Array.from({ length: 5 }, (_, i) => {
+              const filled = i < fullStars;
+              const half = i === fullStars && hasHalf;
+              return (
+                <svg class:list={['w-3.5 h-3.5', filled || half ? 'text-amber' : 'text-mist']} viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              );
+            })}
+          </div>
+          <span class="font-mono text-[11px] text-stone/70">{product.rating}</span>
+        </>
+      ) : (
+        <span class="font-mono text-[10px] text-sage uppercase tracking-wider">Editor pick · North Idaho</span>
+      )}
+    </div>
+
+    <ul class="space-y-2 mb-5 flex-1">
+      {cardBullets.map((pro) => (
+        <li class="flex items-start gap-2.5 text-[13px] font-body text-ink/75 leading-snug">
+          <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-sage" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z" />
+          </svg>
+          <span>{pro}</span>
+        </li>
+      ))}
+    </ul>
+
+    {showSpecs && product && (
+      <div class="border-t border-mist/60 pt-4 mb-5">
+        <dl class="grid grid-cols-2 gap-x-4 gap-y-2.5">
+          {Object.entries(product.specs).slice(0, 4).map(([key, value]) => (
+            <div>
+              <dt class="font-mono text-[10px] text-stone/50 uppercase tracking-wider">{key}</dt>
+              <dd class="font-body text-[13px] text-ink/80 mt-0.5">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    )}
+  </div>
+
+  <div class="px-6 pb-5">
     <BuyButton affiliateId={affiliateId} variant="primary" showPrice={false} />
-    <span class="font-mono text-xs text-stone">via Amazon</span>
   </div>
 </div>
+
+<script>
+  function initProductCardPhotos() {
+    document.querySelectorAll('img.product-card-photo').forEach((el) => {
+      if (!(el instanceof HTMLImageElement)) return;
+      const showFallback = () => {
+        el.classList.add('hidden');
+        const fb = el.nextElementSibling;
+        if (fb?.classList?.contains('product-card-photo-fallback')) {
+          fb.classList.remove('hidden');
+        }
+      };
+      el.addEventListener('error', showFallback);
+      if (el.complete && el.naturalWidth === 0) showFallback();
+    });
+  }
+
+  function syncDots(track: HTMLElement, dots: HTMLElement[]) {
+    const w = track.clientWidth;
+    if (w <= 0) return;
+    const i = Math.round(track.scrollLeft / w);
+    dots.forEach((d, j) => {
+      const on = j === i;
+      d.setAttribute('aria-pressed', on ? 'true' : 'false');
+      d.classList.toggle('w-5', on);
+      d.classList.toggle('bg-amber', on);
+      d.classList.toggle('w-1.5', !on);
+      d.classList.toggle('bg-stone/25', !on);
+    });
+  }
+
+  function initProductCarousels() {
+    document.querySelectorAll('[data-product-carousel]:not([data-carousel-ready])').forEach((root) => {
+      root.setAttribute('data-carousel-ready', '');
+      const track = root.querySelector('[data-carousel-track]');
+      const dots = Array.from(root.querySelectorAll('[data-carousel-dot]')) as HTMLElement[];
+      if (!(track instanceof HTMLElement) || !dots.length) return;
+
+      const onScroll = () => syncDots(track, dots);
+      track.addEventListener('scroll', onScroll, { passive: true });
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          const w = track.clientWidth;
+          track.scrollTo({ left: i * w, behavior: 'smooth' });
+        });
+      });
+
+      const ro = new ResizeObserver(() => syncDots(track, dots));
+      ro.observe(track);
+      requestAnimationFrame(() => syncDots(track, dots));
+    });
+  }
+
+  initProductCardPhotos();
+  initProductCarousels();
+  document.addEventListener('astro:page-load', () => {
+    initProductCardPhotos();
+    initProductCarousels();
+  });
+</script>

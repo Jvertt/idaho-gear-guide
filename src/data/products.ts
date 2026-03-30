@@ -1,3 +1,5 @@
+import { getAffiliateById, isAffiliateAvailable } from './affiliates';
+
 export interface Product {
   affiliateId: string;
   rating: number;
@@ -373,6 +375,12 @@ export function getProductByAffiliateId(affiliateId: string): Product | undefine
 }
 
 export function getProductsByCategory(category: string, affiliates: { id: string; category: string }[]): Product[] {
-  const ids = affiliates.filter((a) => a.category === category).map((a) => a.id);
+  const ids = affiliates
+    .filter((a) => a.category === category)
+    .map((a) => a.id)
+    .filter((id) => {
+      const link = getAffiliateById(id);
+      return link && isAffiliateAvailable(link);
+    });
   return products.filter((p) => ids.includes(p.affiliateId));
 }

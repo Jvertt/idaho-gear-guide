@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ProductCard from '../components/affiliate/ProductCard.astro';
 import EmailCapture from '../components/email/EmailCapture.astro';
 import { buildBreadcrumbSchema } from '../utils/schema';
+import { filterAvailableAffiliateIds } from '../data/affiliates';
 
 const breadcrumbs = buildBreadcrumbSchema([
   { name: 'Home', url: '/' },
@@ -22,7 +23,7 @@ const categories = [
   { label: 'Skis', category: 'skis', ids: ['rossignol-experience-82', 'volkl-blaze-94'] },
   { label: 'Ski Helmets', category: 'ski-helmet', ids: ['smith-vantage-mips'] },
   { label: 'SUP Boards', category: 'sup-board', ids: ['irocker-cruiser-106'] },
-];
+].map((c) => ({ ...c, ids: filterAvailableAffiliateIds(c.ids) }));
 ---
 
 <BaseLayout
@@ -32,20 +33,25 @@ const categories = [
   jsonLd={breadcrumbs}
 >
   <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center mb-12">
+    <div class="text-center mb-12 reveal reveal-up reveal-duration-500">
       <span class="font-mono text-xs text-amber uppercase tracking-[0.15em]">Curated for North Idaho</span>
       <h1 class="font-display text-4xl text-ink font-bold mt-2 mb-4">Top Gear Picks</h1>
       <p class="font-body text-lg text-stone max-w-2xl mx-auto">
-        Every product on this page has been tested in North Idaho conditions. We organize by category with budget, mid-range, and premium options so you can find the right fit.
+        Every product on this page has been tested in North Idaho conditions. We organize by category with budget, mid-range, and premium options so you can find the right fit. For a wider set of Amazon-linked essentials (filters, stoves, dry bags, and more), see{' '}
+        <a href="/explore-gear" class="text-pine font-semibold hover:text-amber underline">Explore more gear</a>.
       </p>
     </div>
 
-    {categories.map((cat) => (
-      <div class="mb-14">
+    {categories
+      .filter((cat) => cat.ids.length > 0)
+      .map((cat) => (
+      <div class="mb-14 reveal reveal-up reveal-duration-600">
         <h2 class="font-display text-2xl text-ink font-bold mb-6 pb-2 border-b border-mist">{cat.label}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal-stagger">
           {cat.ids.map((id) => (
-            <ProductCard affiliateId={id} showSpecs={true} />
+            <div class="reveal reveal-scale reveal-duration-500">
+              <ProductCard affiliateId={id} showSpecs={true} />
+            </div>
           ))}
         </div>
       </div>

@@ -1,7 +1,9 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 import SEOHead from '../components/layout/SEOHead.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
+import '../styles/global.css';
 
 export interface Props {
   title: string;
@@ -25,6 +27,7 @@ const props = Astro.props;
     <SEOHead {...props}>
       <slot name="head" slot="head" />
     </SEOHead>
+    <ViewTransitions />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -57,5 +60,39 @@ const props = Astro.props;
       var skimlinks_pub_id = "1234567X";
     </script>
     <script is:inline type="text/javascript" src="https://s.skimresources.com/js/1234567X.skimlinks.js"></script>
+
+    <script>
+      function initReveal() {
+        const els = document.querySelectorAll('.reveal:not(.revealed)');
+        if (!els.length) return;
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                (e.target as HTMLElement).classList.add('revealed');
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+
+      function initStickyHeader() {
+        const hdr = document.querySelector('.site-header');
+        if (!hdr) return;
+        const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 24);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+
+      initReveal();
+      initStickyHeader();
+      document.addEventListener('astro:page-load', () => {
+        initReveal();
+        initStickyHeader();
+      });
+    </script>
   </body>
 </html>

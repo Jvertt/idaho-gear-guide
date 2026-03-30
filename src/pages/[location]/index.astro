@@ -7,6 +7,7 @@ import { locations } from '../../data/locations';
 import { getActivityBySlug } from '../../data/activities';
 import { generateLocationSEO } from '../../utils/seo';
 import { buildBreadcrumbSchema } from '../../utils/schema';
+import { filterAvailableAffiliateIds } from '../../data/affiliates';
 
 export function getStaticPaths() {
   return locations.map((loc) => ({
@@ -34,7 +35,9 @@ const gearPickMap: Record<string, string[]> = {
   'schweitzer-mountain': ['rossignol-experience-82', 'smith-vantage-mips', 'volkl-blaze-94'],
   'lake-pend-oreille': ['perception-pescador-12', 'simms-freestone-waders', 'yeti-tundra-45'],
 };
-const gearPicks = gearPickMap[location.slug] || ['yeti-tundra-45', 'osprey-atmos-50', 'salomon-x-ultra-4-gtx'];
+const gearPicks = filterAvailableAffiliateIds(
+  gearPickMap[location.slug] || ['yeti-tundra-45', 'osprey-atmos-50', 'salomon-x-ultra-4-gtx'],
+);
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const seasonMonths: Record<string, number[]> = {
@@ -57,7 +60,7 @@ const bestMonthSet = new Set(location.bestSeason.flatMap((s: string) => seasonMo
       />
       <div class="absolute inset-0 bg-gradient-to-t from-pine via-pine/70 to-pine/30" />
     </div>
-    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-14">
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-14 reveal reveal-fade reveal-duration-700">
       <nav class="mb-4" aria-label="Breadcrumb">
         <ol class="flex items-center gap-1 font-mono text-xs text-sage">
           <li><a href="/" class="hover:text-gold transition-colors">Home</a></li>
@@ -76,11 +79,11 @@ const bestMonthSet = new Set(location.bestSeason.flatMap((s: string) => seasonMo
 
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Highlights -->
-    <section class="mb-12">
+    <section class="mb-12 reveal reveal-up reveal-duration-500">
       <h2 class="font-display text-2xl text-ink font-bold mb-4">Highlights</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 reveal-stagger">
         {location.highlights.map((h: string) => (
-          <div class="flex items-start gap-3 bg-white border border-mist rounded-lg p-4">
+          <div class="reveal reveal-scale reveal-duration-400 flex items-start gap-3 bg-white border border-mist rounded-lg p-4">
             <span class="text-sage text-lg flex-shrink-0">✦</span>
             <p class="font-body text-sm text-ink/85">{h}</p>
           </div>
@@ -89,23 +92,23 @@ const bestMonthSet = new Set(location.bestSeason.flatMap((s: string) => seasonMo
     </section>
 
     <!-- Activities Grid -->
-    <section class="mb-12">
+    <section class="mb-12 reveal reveal-up reveal-duration-500">
       <h2 class="font-display text-2xl text-ink font-bold mb-6">Activities at {location.name}</h2>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 reveal-stagger">
         {locationActivities.map((activity: any) => (
           <a
             href={`/${location.slug}/${activity.slug}`}
-            class="group bg-white border border-mist rounded-xl p-4 hover:border-sage/50 hover:shadow-sm transition-all text-center"
+            class="reveal reveal-scale reveal-duration-400 card-lift group bg-white border border-mist rounded-xl p-4 hover:border-sage/50 text-center"
           >
-            <span class="text-3xl block mb-2">{activity.icon}</span>
-            <h3 class="font-display text-sm text-ink font-semibold group-hover:text-amber transition-colors">{activity.name}</h3>
+            <span class="text-3xl block mb-2 transition-transform duration-300 group-hover:scale-110">{activity.icon}</span>
+            <h3 class="font-display text-sm text-ink font-semibold group-hover:text-amber transition-colors duration-300">{activity.name}</h3>
           </a>
         ))}
       </div>
     </section>
 
     <!-- Seasonal Calendar -->
-    <section class="mb-12">
+    <section class="mb-12 reveal reveal-up reveal-duration-500">
       <h2 class="font-display text-2xl text-ink font-bold mb-4">Best Times to Visit</h2>
       <div class="grid grid-cols-6 md:grid-cols-12 gap-1">
         {months.map((month, i) => (
@@ -122,14 +125,18 @@ const bestMonthSet = new Set(location.bestSeason.flatMap((s: string) => seasonMo
     </section>
 
     <!-- Gear Picks -->
-    <section class="mb-12">
-      <h2 class="font-display text-2xl text-ink font-bold mb-6">Featured Gear for {location.name}</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {gearPicks.map((id: string) => (
-          <ProductCard affiliateId={id} />
-        ))}
-      </div>
-    </section>
+    {gearPicks.length > 0 && (
+      <section class="mb-12 reveal reveal-up reveal-duration-600">
+        <h2 class="font-display text-2xl text-ink font-bold mb-6">Featured Gear for {location.name}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal-stagger">
+          {gearPicks.map((id: string) => (
+            <div class="reveal reveal-scale reveal-duration-500">
+              <ProductCard affiliateId={id} />
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
 
     <EmailCapture variant="inline" leadMagnet={`${location.name} Gear Checklist`} />
   </div>
