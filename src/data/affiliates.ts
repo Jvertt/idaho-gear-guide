@@ -1,11 +1,11 @@
-// MONETIZATION: Amazon Associates only (tag: wildidaho-20)
+// MONETIZATION: Amazon Associates only (tag: idahogear-20)
 // Upgrade path: swap program + url per product as AvantLink/REI/Simms approve us
 // Skimlinks fallback script added in BaseLayout.astro for any missed links
 
 export const ACTIVE_PROGRAMS = {
   amazon: {
     name: 'Amazon Associates',
-    tag: 'wildidaho-20',
+    tag: 'idahogear-20',
     commissionRate: 0.04,
     cookieDays: 1,
     approvalStatus: 'approved',
