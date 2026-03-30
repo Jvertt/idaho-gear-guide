@@ -11,6 +11,7 @@ export interface Product {
 }
 
 export const products: Product[] = [
+  // UPGRADE: Switch to YETI affiliate (Impact) when approved — 7% + 30-day cookie
   {
     affiliateId: 'yeti-tundra-45',
     rating: 4.8,
@@ -65,6 +66,7 @@ export const products: Product[] = [
     alternatives: ['rtic-45-cooler', 'yeti-tundra-45'],
     imageAlt: 'Coleman 52-Quart Xtreme cooler in blue at a lakeside campsite',
   },
+  // UPGRADE: Switch to AvantLink (Orvis/Redington/Sage) when approved — 8% vs 4%
   {
     affiliateId: 'orvis-clearwater-fly-rod',
     rating: 4.5,
@@ -84,6 +86,7 @@ export const products: Product[] = [
     alternatives: ['redington-classic-trout', 'sage-foundation-fly-rod'],
     imageAlt: 'Orvis Clearwater fly rod and reel set up on a North Idaho riverbank with wading boots',
   },
+  // UPGRADE: Switch to Simms direct affiliate when approved — 10% commission
   {
     affiliateId: 'simms-freestone-waders',
     rating: 4.4,
@@ -102,6 +105,7 @@ export const products: Product[] = [
     alternatives: ['simms-g3-guide-waders', 'frogg-toggs-canyon-ii'],
     imageAlt: 'Angler in Simms Freestone waders standing in a rocky North Idaho river',
   },
+  // UPGRADE: Switch to AvantLink (REI) when approved — 5% + 15-day cookie
   {
     affiliateId: 'osprey-atmos-50',
     rating: 4.7,
@@ -139,6 +143,7 @@ export const products: Product[] = [
     alternatives: ['leki-makalu-fx-carbon', 'cascade-mountain-tech-carbon'],
     imageAlt: 'Black Diamond Distance Z trekking poles folded and extended on a trail',
   },
+  // UPGRADE: Switch to AvantLink (REI) when approved — 5% + 15-day cookie
   {
     affiliateId: 'perception-pescador-12',
     rating: 4.3,
@@ -157,6 +162,7 @@ export const products: Product[] = [
     alternatives: ['wilderness-systems-pungo-125', 'pelican-mustang-100x'],
     imageAlt: 'Perception Pescador Pro 12 fishing kayak on calm lake water with rod holders loaded',
   },
+  // UPGRADE: Switch to AvantLink (REI) when approved — 5% + 15-day cookie
   {
     affiliateId: 'salomon-x-ultra-4-gtx',
     rating: 4.6,
@@ -175,6 +181,7 @@ export const products: Product[] = [
     alternatives: ['merrell-moab-3-mid-wp', 'lowa-renegade-gtx-mid'],
     imageAlt: 'Salomon X Ultra 4 GTX hiking boots on a rocky North Idaho trail',
   },
+  // UPGRADE: Switch to AvantLink (REI) when approved — 5% + 15-day cookie
   {
     affiliateId: 'big-agnes-copper-spur-hv-ul2',
     rating: 4.7,
@@ -212,6 +219,7 @@ export const products: Product[] = [
     alternatives: ['perception-pescador-12', 'pelican-mustang-100x'],
     imageAlt: 'Wilderness Systems Pungo 125 kayak on a clear alpine lake in North Idaho',
   },
+  // UPGRADE: Switch to AvantLink (Backcountry) when approved — 5% + 14-day cookie
   {
     affiliateId: 'rossignol-experience-82',
     rating: 4.2,
@@ -266,6 +274,7 @@ export const products: Product[] = [
     alternatives: ['salomon-x-ultra-4-gtx', 'lowa-renegade-gtx-mid'],
     imageAlt: 'Merrell Moab 3 Mid hiking boots on a forest trail in North Idaho',
   },
+  // UPGRADE: Switch to AvantLink (iROCKER) when approved — 8% + 60-day cookie
   {
     affiliateId: 'irocker-cruiser-106',
     rating: 4.4,

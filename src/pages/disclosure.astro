@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildBreadcrumbSchema } from '../utils/schema';
+
+const breadcrumbs = buildBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Affiliate Disclosure', url: '/disclosure' },
+]);
+---
+
+<BaseLayout
+  title="Affiliate Disclosure — Idaho Gear Guide"
+  description="Idaho Gear Guide's affiliate disclosure. Learn how we earn commissions from Amazon Associates and other affiliate programs, and how it affects our recommendations."
+  canonical="https://idahogearguide.com/disclosure"
+  jsonLd={breadcrumbs}
+>
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="font-display text-4xl text-ink font-bold mb-6">Affiliate Disclosure</h1>
+
+    <div class="prose prose-lg font-body text-ink/85 space-y-5">
+      <p>
+        Idaho Gear Guide is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com.
+      </p>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-8 mb-3">What this means for you</h2>
+      <p>
+        When you click on a product link on this site and make a purchase on Amazon, we may earn a small commission at no additional cost to you. These commissions help us cover the costs of running this site, testing gear, and producing content.
+      </p>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-8 mb-3">Our editorial independence</h2>
+      <p>
+        Affiliate relationships never influence our editorial recommendations. We recommend gear based on hands-on testing in North Idaho conditions — on the lakes, trails, rivers, and mountains we use ourselves. If a product isn't worth your money, we'll say so regardless of whether we earn a commission from it.
+      </p>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-8 mb-3">Pricing accuracy</h2>
+      <p>
+        Product prices displayed on this site are accurate at the time of writing but may change. We make every effort to keep pricing current, but we recommend verifying the final price on Amazon before purchasing. We are not responsible for price changes that occur after publication.
+      </p>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-8 mb-3">Additional affiliate programs</h2>
+      <p>
+        In the future, we may participate in additional affiliate programs from outdoor retailers and brands. Any new affiliate partnerships will be disclosed on this page. We may also use Skimlinks, a service that automatically monetizes commercial links across the site.
+      </p>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-8 mb-3">Questions?</h2>
+      <p>
+        If you have any questions about our affiliate relationships or how we recommend products, feel free to reach out through our <a href="/about" class="text-amber hover:text-gold underline">About page</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
