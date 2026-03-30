@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/affiliate/ProductCard.astro';
+import EmailCapture from '../components/email/EmailCapture.astro';
+import { buildWebSiteSchema } from '../utils/schema';
+import { locations } from '../data/locations';
+
+const siteSchema = buildWebSiteSchema();
+
+const featuredCategories = [
+  { name: 'Fishing', icon: '🎣', slug: 'fishing', description: 'Fly rods, waders, and tackle for Idaho\'s legendary waters' },
+  { name: 'Hiking', icon: '🥾', slug: 'hiking', description: 'Boots, packs, and poles for Panhandle trails' },
+  { name: 'Kayaking', icon: '🛶', slug: 'kayaking', description: 'Kayaks, paddles, and PFDs for pristine lakes' },
+  { name: 'Skiing', icon: '⛷️', slug: 'skiing-snowboarding', description: 'Skis, boards, and gear for Schweitzer powder' },
+  { name: 'Hunting', icon: '🦌', slug: 'hunting', description: 'Optics, packs, and clothing for backcountry hunts' },
+  { name: 'Camping', icon: '⛺', slug: 'camping', description: 'Tents, bags, and cookware for forest overnights' },
+];
+
+const topPicks = ['yeti-tundra-45', 'orvis-clearwater-fly-rod', 'osprey-atmos-50'];
+
+const featuredLocations = locations.slice(0, 6);
+---
+
+<BaseLayout
+  title="Idaho Gear Guide — North Idaho Outdoor Gear Reviews"
+  description="Expert gear guides, reviews, and recommendations for North Idaho outdoor adventures. Fishing, hiking, kayaking, skiing, and more — tested locally."
+  canonical="https://idahogearguide.com"
+  ogType="website"
+  jsonLd={siteSchema}
+>
+  <!-- Hero -->
+  <section class="bg-pine text-cream py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="font-mono text-xs text-gold uppercase tracking-[0.2em] mb-4">Tested in North Idaho</p>
+      <h1 class="font-display text-4xl md:text-6xl font-bold leading-tight mb-6">
+        Gear Guides for<br />North Idaho's Outdoors
+      </h1>
+      <p class="font-body text-lg text-sage max-w-2xl mx-auto mb-8 leading-relaxed">
+        We paddle the lakes, hike the trails, and fish the rivers of North Idaho's panhandle. Our honest, locally-tested gear recommendations help you get outside with the right equipment.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/gear-picks" class="font-mono text-sm font-semibold uppercase tracking-wide bg-amber hover:bg-gold text-pine px-8 py-3 rounded-lg transition-colors">
+          Browse Gear Picks
+        </a>
+        <a href="/coeur-dalene" class="font-mono text-sm font-semibold uppercase tracking-wide border border-sage text-sage hover:text-cream hover:border-cream px-8 py-3 rounded-lg transition-colors">
+          Explore Locations
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Categories -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-10">
+      <span class="font-mono text-xs text-amber uppercase tracking-[0.15em]">Find Your Gear</span>
+      <h2 class="font-display text-3xl text-ink font-bold mt-2">Gear by Activity</h2>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {featuredCategories.map((cat) => (
+        <a
+          href={`/coeur-dalene/${cat.slug}`}
+          class="group bg-white border border-mist rounded-xl p-5 hover:border-sage/50 hover:shadow-sm transition-all"
+        >
+          <span class="text-3xl block mb-3">{cat.icon}</span>
+          <h3 class="font-display text-lg text-ink font-semibold group-hover:text-amber transition-colors">{cat.name}</h3>
+          <p class="font-body text-sm text-stone mt-1">{cat.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Featured Locations -->
+  <section class="bg-mist/30 py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <span class="font-mono text-xs text-amber uppercase tracking-[0.15em]">Explore North Idaho</span>
+        <h2 class="font-display text-3xl text-ink font-bold mt-2">Popular Locations</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {featuredLocations.map((loc) => (
+          <a
+            href={`/${loc.slug}`}
+            class="group bg-white border border-mist rounded-xl p-6 hover:border-sage/50 hover:shadow-sm transition-all"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-display text-lg text-ink font-semibold group-hover:text-amber transition-colors">{loc.name}</h3>
+              <span class="font-mono text-xs text-sage">{loc.activities.length} activities</span>
+            </div>
+            <p class="font-body text-sm text-stone leading-relaxed line-clamp-2">{loc.description}</p>
+            <div class="flex flex-wrap gap-1 mt-3">
+              {loc.bestSeason.map((s) => (
+                <span class="font-mono text-xs text-sage capitalize">{s}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Top Gear Picks -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-10">
+      <span class="font-mono text-xs text-amber uppercase tracking-[0.15em]">Editor's Choice</span>
+      <h2 class="font-display text-3xl text-ink font-bold mt-2">Top Gear Picks</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {topPicks.map((id) => (
+        <ProductCard affiliateId={id} showSpecs={false} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Email Capture -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <EmailCapture variant="banner" leadMagnet="North Idaho Outdoor Gear Checklist" />
+  </div>
+</BaseLayout>

@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildBreadcrumbSchema } from '../utils/schema';
+
+const breadcrumbs = buildBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'About', url: '/about' },
+]);
+---
+
+<BaseLayout
+  title="About — Idaho Gear Guide"
+  description="Learn about Idaho Gear Guide — who we are, how we test gear, and why we focus on North Idaho outdoor equipment recommendations."
+  canonical="https://idahogearguide.com/about"
+  jsonLd={breadcrumbs}
+>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="font-display text-4xl text-ink font-bold mb-6">About Idaho Gear Guide</h1>
+
+    <div class="space-y-6 font-body text-ink/85 leading-relaxed">
+      <p>
+        Idaho Gear Guide exists for one reason: North Idaho's outdoors deserve gear recommendations from people who actually use the gear here.
+      </p>
+
+      <p>
+        Too many "best of" lists are written from office chairs in New York or San Francisco. The authors have never waded the rocky bottom of the St. Joe River in October, never portaged a kayak down to the hidden beaches of Priest Lake, and never dealt with the specific mix of snow, ice, and root-covered trails you find on Tubbs Hill in November.
+      </p>
+
+      <p>
+        We have. We live here. We paddle Lake Coeur d'Alene, ski Schweitzer Mountain, hike the Selkirk Crest, and fish the Clearwater tributaries. Every piece of gear we recommend has been tested in the conditions you'll actually face in North Idaho's panhandle.
+      </p>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-10 mb-4">How We Test</h2>
+
+      <p>
+        We purchase or borrow gear through standard retail channels — we don't accept manufacturer samples or sponsored placements. Our testing process is straightforward:
+      </p>
+
+      <ul class="list-disc pl-6 space-y-2">
+        <li>We use each product for a minimum of two weeks in real field conditions</li>
+        <li>We test across seasons when applicable — a hiking boot that's great in July might fail in October mud</li>
+        <li>We compare against the products most people are actually choosing between at the same price point</li>
+        <li>We note durability issues and update reviews when gear fails over time</li>
+      </ul>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-10 mb-4">How We Make Money</h2>
+
+      <p>
+        We earn commissions when you purchase through our affiliate links. This doesn't cost you anything extra — the price is the same whether you click our link or go directly to the retailer. These commissions fund our gear purchases, testing, and the time it takes to write honest reviews.
+      </p>
+
+      <p>
+        Our affiliate relationships never influence our recommendations. If a product isn't good enough for the rivers, trails, and mountains of North Idaho, it doesn't make our lists — regardless of commission rate.
+      </p>
+
+      <h2 class="font-display text-2xl text-ink font-semibold mt-10 mb-4">The North Idaho Focus</h2>
+
+      <p>
+        We intentionally focus on the Idaho panhandle — from Post Falls to Bonners Ferry, from the Clearwater River to the Canadian border. This region has specific conditions that make generic gear guides inadequate:
+      </p>
+
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Cold, deep lakes that demand specific kayak and paddleboard characteristics</li>
+        <li>Rocky, root-covered trails that destroy cheap boots faster than smooth Western trails</li>
+        <li>Heavy, wet Inland Northwest snow that requires different ski characteristics than Colorado powder</li>
+        <li>Diverse fisheries from warm-water bass lakes to cold-water trout streams within a 30-minute drive</li>
+        <li>Bear country that makes cooler and food storage choices a safety consideration, not just a convenience</li>
+      </ul>
+
+      <p class="mt-8 p-4 bg-forest/5 border border-forest/20 rounded-lg">
+        <strong class="text-pine">Get in touch:</strong> Have a gear question specific to North Idaho? Want to suggest a product for review? Drop us a line through our <a href="/newsletter" class="text-amber hover:text-gold transition-colors">newsletter</a> — we read every reply.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

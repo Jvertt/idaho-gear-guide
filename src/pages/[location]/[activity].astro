@@ -1,0 +1,286 @@
+---
+import ActivityLayout from '../../layouts/ActivityLayout.astro';
+import ProductCard from '../../components/affiliate/ProductCard.astro';
+import ComparisonTable from '../../components/affiliate/ComparisonTable.astro';
+import LocalTips from '../../components/content/LocalTips.astro';
+import FAQSection from '../../components/content/FAQSection.astro';
+import EmailCapture from '../../components/email/EmailCapture.astro';
+import { locations, type Location } from '../../data/locations';
+import { getActivityBySlug, type Activity } from '../../data/activities';
+import { generateActivityPageSEO } from '../../utils/seo';
+
+export function getStaticPaths() {
+  const paths: { params: { location: string; activity: string }; props: { location: Location; activity: Activity } }[] = [];
+  for (const loc of locations) {
+    for (const actSlug of loc.activities) {
+      const act = getActivityBySlug(actSlug);
+      if (act) {
+        paths.push({
+          params: { location: loc.slug, activity: act.slug },
+          props: { location: loc, activity: act },
+        });
+      }
+    }
+  }
+  return paths;
+}
+
+const { location, activity } = Astro.props;
+const year = new Date().getFullYear();
+const seo = generateActivityPageSEO(location, activity, year);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: location.name, url: `/${location.slug}` },
+  { name: activity.name, url: `/${location.slug}/${activity.slug}` },
+];
+
+type GearPickSet = {
+  top3: string[];
+  full: string[];
+  comparison: string[];
+};
+
+const gearMap: Record<string, GearPickSet> = {
+  kayaking: {
+    top3: ['perception-pescador-12', 'wilderness-systems-pungo-125', 'pelican-mustang-100x'],
+    full: ['perception-pescador-12', 'wilderness-systems-pungo-125', 'pelican-mustang-100x', 'intex-explorer-k2', 'irocker-cruiser-106'],
+    comparison: ['pelican-mustang-100x', 'perception-pescador-12', 'wilderness-systems-pungo-125'],
+  },
+  fishing: {
+    top3: ['orvis-clearwater-fly-rod', 'simms-freestone-waders', 'shimano-sedona-spinning'],
+    full: ['orvis-clearwater-fly-rod', 'redington-classic-trout', 'sage-foundation-fly-rod', 'simms-freestone-waders', 'shimano-sedona-spinning', 'st-croix-triumph-spinning', 'simms-g3-guide-waders'],
+    comparison: ['redington-classic-trout', 'orvis-clearwater-fly-rod', 'sage-foundation-fly-rod'],
+  },
+  hiking: {
+    top3: ['salomon-x-ultra-4-gtx', 'osprey-atmos-50', 'black-diamond-distance-z'],
+    full: ['salomon-x-ultra-4-gtx', 'merrell-moab-3-mid-wp', 'lowa-renegade-gtx-mid', 'osprey-atmos-50', 'black-diamond-distance-z', 'deuter-trail-30', 'cascade-mountain-tech-carbon'],
+    comparison: ['merrell-moab-3-mid-wp', 'salomon-x-ultra-4-gtx', 'lowa-renegade-gtx-mid'],
+  },
+  camping: {
+    top3: ['big-agnes-copper-spur-hv-ul2', 'yeti-tundra-45', 'kelty-cosmic-20'],
+    full: ['big-agnes-copper-spur-hv-ul2', 'kelty-late-start-2', 'yeti-tundra-45', 'rtic-45-cooler', 'kelty-cosmic-20', 'western-mountaineering-alpinlite'],
+    comparison: ['kelty-late-start-2', 'big-agnes-copper-spur-hv-ul2'],
+  },
+  'skiing-snowboarding': {
+    top3: ['rossignol-experience-82', 'volkl-blaze-94', 'smith-vantage-mips'],
+    full: ['rossignol-experience-82', 'volkl-blaze-94', 'smith-vantage-mips'],
+    comparison: ['rossignol-experience-82', 'volkl-blaze-94'],
+  },
+  'paddle-boarding': {
+    top3: ['irocker-cruiser-106', 'perception-pescador-12', 'wilderness-systems-pungo-125'],
+    full: ['irocker-cruiser-106', 'perception-pescador-12', 'wilderness-systems-pungo-125'],
+    comparison: ['irocker-cruiser-106'],
+  },
+  hunting: {
+    top3: ['osprey-atmos-50', 'salomon-x-ultra-4-gtx', 'yeti-tundra-45'],
+    full: ['osprey-atmos-50', 'gregory-baltoro-65', 'salomon-x-ultra-4-gtx', 'lowa-renegade-gtx-mid', 'yeti-tundra-45'],
+    comparison: ['deuter-trail-30', 'osprey-atmos-50', 'gregory-baltoro-65'],
+  },
+  'mountain-biking': {
+    top3: ['osprey-atmos-50', 'salomon-x-ultra-4-gtx', 'deuter-trail-30'],
+    full: ['osprey-atmos-50', 'deuter-trail-30', 'salomon-x-ultra-4-gtx'],
+    comparison: ['deuter-trail-30', 'osprey-atmos-50'],
+  },
+  snowshoeing: {
+    top3: ['salomon-x-ultra-4-gtx', 'osprey-atmos-50', 'black-diamond-distance-z'],
+    full: ['salomon-x-ultra-4-gtx', 'lowa-renegade-gtx-mid', 'osprey-atmos-50', 'black-diamond-distance-z'],
+    comparison: ['merrell-moab-3-mid-wp', 'salomon-x-ultra-4-gtx', 'lowa-renegade-gtx-mid'],
+  },
+  'whitewater-rafting': {
+    top3: ['perception-pescador-12', 'yeti-tundra-45', 'salomon-x-ultra-4-gtx'],
+    full: ['perception-pescador-12', 'yeti-tundra-45', 'salomon-x-ultra-4-gtx'],
+    comparison: ['pelican-mustang-100x', 'perception-pescador-12'],
+  },
+  'trail-running': {
+    top3: ['salomon-x-ultra-4-gtx', 'deuter-trail-30', 'black-diamond-distance-z'],
+    full: ['salomon-x-ultra-4-gtx', 'merrell-moab-3-mid-wp', 'deuter-trail-30', 'black-diamond-distance-z', 'cascade-mountain-tech-carbon'],
+    comparison: ['merrell-moab-3-mid-wp', 'salomon-x-ultra-4-gtx', 'lowa-renegade-gtx-mid'],
+  },
+  'boating-wakeboarding': {
+    top3: ['yeti-tundra-45', 'rtic-45-cooler', 'coleman-xtreme-52qt'],
+    full: ['yeti-tundra-45', 'rtic-45-cooler', 'coleman-xtreme-52qt'],
+    comparison: ['coleman-xtreme-52qt', 'rtic-45-cooler', 'yeti-tundra-45'],
+  },
+  'wildlife-photography': {
+    top3: ['osprey-atmos-50', 'salomon-x-ultra-4-gtx', 'black-diamond-distance-z'],
+    full: ['osprey-atmos-50', 'salomon-x-ultra-4-gtx', 'deuter-trail-30', 'black-diamond-distance-z'],
+    comparison: ['deuter-trail-30', 'osprey-atmos-50', 'gregory-baltoro-65'],
+  },
+  'rock-climbing': {
+    top3: ['osprey-atmos-50', 'salomon-x-ultra-4-gtx', 'black-diamond-distance-z'],
+    full: ['osprey-atmos-50', 'salomon-x-ultra-4-gtx', 'deuter-trail-30', 'black-diamond-distance-z'],
+    comparison: ['deuter-trail-30', 'osprey-atmos-50'],
+  },
+};
+
+const picks = gearMap[activity.slug] || gearMap['hiking'];
+
+const localTipsMap: Record<string, Record<string, string[]>> = {
+  'coeur-dalene': {
+    kayaking: [
+      "Launch from Independence Point downtown for easy access to the lake's south end. Parking fills by 10am in July and August.",
+      "Paddle north along the eastern shore toward Beauty Bay for the most protected water and best scenery.",
+      "Wind typically picks up by early afternoon on Lake Coeur d'Alene. Plan morning paddles for calmer conditions.",
+      "The Spokane River section between the dam and Post Falls offers a mellow 3-mile float — great for beginners."
+    ],
+    fishing: [
+      "Wolf Lodge Bay on the east side of the lake produces some of the best kokanee salmon action from July through September.",
+      "The Coeur d'Alene River upstream of Harrison has excellent cutthroat trout fishing in June with small nymphs and dry flies.",
+      "Try the docks and pilings around Cougar Bay for largemouth bass — rubber worms and jigs produce in spring.",
+      "An Idaho Panhandle fishing license is required. Purchase at Fin & Field downtown or the Idaho Fish & Game website."
+    ],
+    hiking: [
+      "Tubbs Hill's main loop is 2.2 miles and offers the best lake views within walking distance of downtown. The trail has exposed root sections — ankle-supporting boots help.",
+      "Mineral Ridge Trail near Beauty Bay is a 3.3-mile loop with 700 feet of elevation gain and winter bald eagle viewing.",
+      "Canfield Mountain trail system has 30+ miles of shared-use trails north of town. The ridgeline trail views are exceptional in fall.",
+      "Carry bear spray on Panhandle National Forest trails — black bears are common, especially near berry patches in August."
+    ],
+    default: [
+      "Check weather conditions at weather.gov — North Idaho mountain weather can change rapidly, especially above 4,000 feet.",
+      "Cell service is unreliable in many recreation areas. Download offline maps before heading out.",
+      "Pack layers even in summer — mornings on the lake can be 50°F when afternoons reach 90°F.",
+      "Local outfitters on Sherman Avenue in downtown Coeur d'Alene can provide current conditions and gear rentals."
+    ],
+  },
+  sandpoint: {
+    default: [
+      "Schweitzer Mountain Road can be icy from November through April. Studded tires or chains are recommended.",
+      "Lake Pend Oreille's size creates its own weather — fog and wind can appear quickly. Watch conditions from shore before launching.",
+      "The Bonner County farmers market runs Saturday mornings in summer — great for pre-hike provisions.",
+      "Sandpoint has a strong local gear shop scene. Visit Outdoor Experience on First Avenue for local beta and rentals."
+    ],
+  },
+  'priest-lake': {
+    default: [
+      "The road to Priest Lake's east side (Coolin) is paved but narrow — drive carefully, especially around logging trucks.",
+      "Water temperatures at Priest Lake rarely exceed 65°F even in August. A wetsuit or splash gear extends your paddle season.",
+      "The Thorofare — the channel connecting upper and lower Priest Lakes — is a must-paddle route. Plan 2-3 hours each way.",
+      "Dispersed camping along the lake's west side requires a Panhandle National Forest recreation pass."
+    ],
+  },
+};
+
+function getLocalTips(): string[] {
+  const locTips = localTipsMap[location.slug];
+  if (!locTips) return localTipsMap['coeur-dalene']?.default || [];
+  return locTips[activity.slug] || locTips.default || localTipsMap['coeur-dalene']?.default || [];
+}
+
+const faqMap: Record<string, { q: string; a: string }[]> = {
+  kayaking: [
+    { q: `What type of kayak is best for ${location.name}?`, a: `For ${location.name}, a sit-on-top kayak like the Perception Pescador Pro 12 works well for fishing and casual paddling on calm days. If you're planning longer paddles or cooler conditions, a sit-inside kayak like the Wilderness Systems Pungo 125 offers better weather protection and tracking.` },
+    { q: `Do I need a wetsuit for kayaking at ${location.name}?`, a: `Water temperatures in North Idaho lakes typically range from 40°F in spring to 65°F in late summer. A wetsuit or drysuit is strongly recommended for spring and fall paddling. In July and August, you can paddle comfortably in quick-dry clothing, but always wear a PFD.` },
+    { q: `Where are the best kayak launch points at ${location.name}?`, a: `Most North Idaho lakes have public boat launches with paved ramps. For kayaks, look for sandy beaches or gravel access points — they're easier on hulls than concrete ramps. Arrive early on summer weekends, as parking fills quickly at popular launches.` },
+    { q: `Is kayaking at ${location.name} safe for beginners?`, a: `Yes, but stick to protected bays and calm mornings. Wind can create challenging conditions on larger lakes by early afternoon. Take a paddling course through the local recreation department if you're new to the sport, and always file a float plan with someone onshore.` },
+    { q: `What should I bring kayaking at ${location.name}?`, a: `Essentials include a PFD (required by Idaho law), paddle, dry bag for electronics, sunscreen, water, and snacks. Add a bilge pump for sit-inside kayaks, a whistle (Coast Guard requirement), and a paddle float for self-rescue in deeper water.` },
+  ],
+  fishing: [
+    { q: `What fish species can I catch at ${location.name}?`, a: `North Idaho waters hold rainbow trout, cutthroat trout, kokanee salmon, largemouth and smallmouth bass, northern pike, and perch. Lake Pend Oreille is famous for its Kamloops rainbow trout, while the Coeur d'Alene River system has excellent cutthroat fishing.` },
+    { q: `Do I need a fly rod or spinning rod for ${location.name}?`, a: `Both work well. Fly rods excel on rivers and streams for trout — a 5-weight like the Orvis Clearwater covers most situations. Spinning gear is better for lake fishing, trolling, and targeting bass or pike. Many anglers carry both.` },
+    { q: `What's the best time of year to fish at ${location.name}?`, a: `Spring (April–May) brings excellent trout fishing as waters warm. Summer is prime for bass and kokanee. Fall steelhead runs on the Clearwater system are legendary. Winter ice fishing on smaller lakes like Hayden and Spirit Lake produces perch and trout.` },
+    { q: `Do I need waders for fishing at ${location.name}?`, a: `For river fishing, yes — breathable chest waders like the Simms Freestone are essential from September through June. Lake fishing from shore or a boat doesn't require waders, though hip boots help during spring runoff conditions.` },
+    { q: `Where can I buy an Idaho fishing license?`, a: `Purchase online at idfg.idaho.gov, at local sporting goods stores like Fin & Field in Coeur d'Alene, or at Walmart. A resident annual license costs around $30. Non-residents pay more but can buy 1-day, 3-day, or annual options. A trout permit is required in addition to the base license.` },
+  ],
+  hiking: [
+    { q: `What are the best hiking trails near ${location.name}?`, a: `Popular trails near ${location.name} include Tubbs Hill (2.2 miles, easy), Mineral Ridge (3.3 miles, moderate), and Canfield Mountain (various distances, moderate to strenuous). For more remote options, the Selkirk Crest and Panhandle National Forest offer multi-day backpacking routes.` },
+    { q: `Are there bears on hiking trails near ${location.name}?`, a: `Yes. Black bears are common throughout North Idaho, and grizzly bears have been documented in the Selkirk Mountains and Boundary County. Carry bear spray, make noise on the trail, store food properly, and keep dogs leashed. Bear encounters are rare but preparation is essential.` },
+    { q: `What hiking boots work best for North Idaho trails?`, a: `North Idaho trails are rocky, root-covered, and often muddy. Waterproof mid-height boots with good ankle support work best. The Salomon X Ultra 4 GTX is our top pick for its grip on wet rock and Gore-Tex waterproofing. Budget hikers will be well-served by the Merrell Moab 3 Mid.` },
+    { q: `When is hiking season at ${location.name}?`, a: `Low-elevation trails (like Tubbs Hill) are accessible year-round, though they can be icy in winter. Mid-elevation trails clear of snow by late April to May. High-alpine trails in the Selkirk Crest may not be snow-free until late June or early July. Fall (September–October) offers the best weather and fewest crowds.` },
+    { q: `Do I need trekking poles for hiking near ${location.name}?`, a: `Trekking poles aren't essential for flat lakeside trails, but they make a significant difference on steeper terrain like Mineral Ridge, Canfield Mountain, and Selkirk Crest routes. They reduce knee strain on descents and help with stability on wet, rocky surfaces. The Black Diamond Distance Z poles pack down small when you don't need them.` },
+  ],
+  camping: [
+    { q: `Where are the best campgrounds near ${location.name}?`, a: `Farragut State Park offers developed camping with showers and electrical hookups near Lake Pend Oreille. For more rustic options, Priest Lake State Park and the Panhandle National Forest have dozens of dispersed and developed sites. Reservations are essential for summer weekends at state parks.` },
+    { q: `Is dispersed camping allowed near ${location.name}?`, a: `Yes, dispersed camping is allowed on most National Forest land in the Idaho Panhandle. Follow Leave No Trace principles, camp at least 200 feet from water sources, and check for any fire restrictions — particularly during dry summers when campfire bans are common.` },
+    { q: `What type of cooler do I need for camping near ${location.name}?`, a: `For weekend car camping, a mid-range rotomolded cooler like the RTIC 45 provides excellent ice retention. For multi-day backcountry trips, weight matters more — consider freeze-dried meals instead. In bear country, a bear-resistant cooler like the YETI Tundra (with corner locks) provides peace of mind.` },
+    { q: `Are there bears at campgrounds near ${location.name}?`, a: `Black bears frequent campgrounds throughout North Idaho, particularly those near berry patches in late summer. Store all food and scented items in bear-resistant containers or hang them from a bear pole. Many developed campgrounds provide bear-proof food storage boxes.` },
+    { q: `What sleeping bag temperature rating do I need?`, a: `Summer camping in North Idaho can see overnight lows in the 40s°F, even in July at higher elevations. A 20°F-rated bag like the Kelty Cosmic 20 covers three-season use. For winter camping or high-alpine trips, step up to a 0°F bag. DriDown-treated fill handles the damp mornings common near Idaho lakes.` },
+  ],
+};
+
+function getFAQs(): { q: string; a: string }[] {
+  return faqMap[activity.slug] || faqMap['hiking'];
+}
+
+const faqs = getFAQs();
+const tips = getLocalTips();
+
+const localContextMap: Record<string, Record<string, string>> = {
+  'coeur-dalene': {
+    kayaking: `Lake Coeur d'Alene stretches 25 miles through forested mountains with over 135 miles of shoreline to explore. The lake's protected bays — particularly Beauty Bay, Cougar Bay, and Wolf Lodge Bay — offer calm paddling conditions even when the main lake gets choppy. Morning paddles from Independence Point let you watch osprey dive for kokanee salmon along the eastern shore, while sunset sessions near Tubbs Hill provide some of the most photogenic paddling in the Inland Northwest. Water clarity reaches 20+ feet in summer, and the lake bottom is visible in many areas, creating an almost tropical feel against the pine-covered mountains.`,
+    fishing: `The Coeur d'Alene lake and river system is one of North Idaho's most diverse fisheries. The lake itself holds kokanee salmon, chinook salmon (landlocked), largemouth and smallmouth bass, northern pike, and various panfish. The Coeur d'Alene River upstream of Harrison offers excellent wild cutthroat trout fishing in a scenic, winding river corridor. For fly anglers, the river's riffle-pool structure rewards good nymph fishing in spring and dry fly presentations through summer. The lake's tributaries, including Fighting Creek and Wolf Lodge Creek, have seasonal runs of spawning kokanee that draw bald eagles in fall — and anglers in summer.`,
+    hiking: `The trail network around Coeur d'Alene ranges from paved lakeside paths to rugged mountain climbs. Tubbs Hill, a 120-acre nature preserve jutting into the lake from downtown, offers the most accessible hiking with panoramic views just minutes from restaurants and shops. North of town, the Canfield Mountain trail system spans 30+ miles of singletrack through mixed conifer forest, with ridgeline trails offering views of Lake Coeur d'Alene, the Spokane River valley, and the Bitterroot Mountains to the east. The Centennial Trail provides 23 miles of paved pathway from the Idaho-Washington border to the Coeur d'Alene Resort, ideal for trail running and family walks.`,
+    default: `Coeur d'Alene sits at the heart of North Idaho's outdoor recreation corridor, with easy access to lakes, rivers, mountains, and forests in every direction. The town's lakefront location means water-based activities are minutes from downtown, while the surrounding mountains offer year-round land-based adventures. The Coeur d'Alene area experiences four distinct seasons — warm summers with long daylight hours, colorful falls with uncrowded trails, snowy winters with nearby ski resorts, and springs that bring wildflowers and rising rivers. This seasonal variety means gear needs shift throughout the year, making versatile, quality equipment especially valuable for local outdoor enthusiasts.`,
+  },
+  sandpoint: {
+    default: `Sandpoint sits at the confluence of Lake Pend Oreille and the Selkirk Mountains, creating a unique environment where water sports and alpine adventures are equally accessible. Lake Pend Oreille — Idaho's largest lake at 43 miles long and over 1,150 feet deep — provides massive open water for boating, fishing, and paddling, while the surrounding mountain terrain offers everything from resort skiing at Schweitzer to backcountry exploration in the Selkirk Crest. The town's position at the lake's northern end means mountain weather and lake weather collide, creating conditions that demand gear capable of handling rapid changes in temperature, wind, and precipitation.`,
+  },
+  'priest-lake': {
+    default: `Priest Lake sits at 2,438 feet elevation in one of the most remote and pristine corners of North Idaho. The 19-mile-long lake, connected to smaller Upper Priest Lake by a navigable channel called the Thorofare, is surrounded by old-growth cedar forests and the Selkirk Mountain wilderness. Water clarity here rivals any mountain lake in the West — you can see 30+ feet down in many spots. The lake's remoteness means less boat traffic and lighter crowds, but it also means less infrastructure. Come prepared with full provisions, reliable gear, and a plan for variable weather that can shift from sunny to stormy within an hour.`,
+  },
+};
+
+function getLocalContext(): string {
+  const locContext = localContextMap[location.slug];
+  if (!locContext) return localContextMap['coeur-dalene']?.default || '';
+  return locContext[activity.slug] || locContext.default || localContextMap['coeur-dalene']?.default || '';
+}
+---
+
+<ActivityLayout
+  {...seo}
+  breadcrumbs={breadcrumbs}
+>
+  <!-- Hero -->
+  <div class="mb-8">
+    <h1 class="font-display text-3xl md:text-4xl text-ink font-bold mb-3">
+      Best {activity.name} Gear for {location.name} ({year})
+    </h1>
+    <p class="font-body text-stone leading-relaxed">{seo.description}</p>
+  </div>
+
+  <!-- Quick Answer Box -->
+  <div class="bg-cream border-2 border-amber/30 rounded-xl p-6 mb-10">
+    <h2 class="font-mono text-xs text-amber uppercase tracking-wider mb-4">Quick Answer — Our Top 3 Picks</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {picks.top3.map((id: string) => (
+        <ProductCard affiliateId={id} tier={undefined} />
+      ))}
+    </div>
+  </div>
+
+  <!-- Local Context -->
+  <section class="mb-10">
+    <h2 class="font-display text-2xl text-ink font-bold mb-4">{activity.name} at {location.name}</h2>
+    <p class="font-body text-ink/85 leading-relaxed">
+      {getLocalContext()}
+    </p>
+  </section>
+
+  <!-- Full Gear Recommendations -->
+  <section class="mb-10">
+    <h2 class="font-display text-2xl text-ink font-bold mb-6">Full Gear Recommendations</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {picks.full.map((id: string) => (
+        <ProductCard affiliateId={id} showSpecs={true} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  {picks.comparison.length >= 2 && (
+    <section class="mb-10">
+      <h2 class="font-display text-2xl text-ink font-bold mb-6">Head-to-Head Comparison</h2>
+      <ComparisonTable affiliateIds={picks.comparison} />
+    </section>
+  )}
+
+  <!-- Local Tips -->
+  <LocalTips locationName={location.name} tips={tips} />
+
+  <!-- Email Capture -->
+  <EmailCapture variant="inline" leadMagnet={`${activity.name} Gear Checklist for ${location.name}`} />
+
+  <!-- FAQ Section -->
+  <FAQSection questions={faqs} />
+</ActivityLayout>

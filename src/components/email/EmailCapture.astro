@@ -1,0 +1,62 @@
+---
+export interface Props {
+  leadMagnet?: string;
+  variant?: 'inline' | 'banner' | 'popup';
+}
+
+const { leadMagnet = 'North Idaho Outdoor Gear Checklist', variant = 'inline' } = Astro.props;
+
+const variantClasses = {
+  inline: 'bg-cream border border-mist rounded-xl p-6',
+  banner: 'bg-pine text-cream py-10 px-6 -mx-4 sm:mx-0 sm:rounded-xl',
+  popup: 'bg-white border-2 border-amber/30 rounded-xl p-8 shadow-lg',
+};
+
+const inputClasses = {
+  inline: 'border-mist bg-white text-ink',
+  banner: 'border-forest bg-pine/50 text-cream placeholder:text-sage',
+  popup: 'border-mist bg-white text-ink',
+};
+
+const headingColor = variant === 'banner' ? 'text-cream' : 'text-ink';
+const textColor = variant === 'banner' ? 'text-sage' : 'text-ink/70';
+---
+
+<section class:list={[variantClasses[variant], 'my-8']}>
+  <div class="max-w-lg mx-auto text-center">
+    <span class="text-2xl mb-2 block">🎒</span>
+    <h3 class:list={['font-display text-xl font-bold mb-2', headingColor]}>
+      Get Your Free {leadMagnet}
+    </h3>
+    <p class:list={['font-body text-sm mb-5', textColor]}>
+      Join 2,000+ North Idaho outdoor enthusiasts getting weekly gear tips, trail reports, and seasonal guides delivered to your inbox.
+    </p>
+
+    <form
+      action="https://app.kit.com/forms"
+      method="post"
+      class="flex flex-col sm:flex-row gap-3 justify-center"
+    >
+      <input
+        type="email"
+        name="email_address"
+        placeholder="your@email.com"
+        required
+        class:list={[
+          'font-body text-sm px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-amber/50 flex-1 max-w-xs',
+          inputClasses[variant],
+        ]}
+      />
+      <button
+        type="submit"
+        class="font-mono text-sm font-semibold uppercase tracking-wide bg-amber hover:bg-gold text-pine px-6 py-3 rounded-lg transition-colors"
+      >
+        Send It
+      </button>
+    </form>
+
+    <p class:list={['font-mono text-xs mt-3', variant === 'banner' ? 'text-sage/60' : 'text-stone/60']}>
+      No spam. Unsubscribe anytime. We respect your inbox.
+    </p>
+  </div>
+</section>

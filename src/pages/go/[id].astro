@@ -1,0 +1,24 @@
+---
+import { affiliateLinks } from '../../data/affiliates';
+
+export function getStaticPaths() {
+  return affiliateLinks.map((link) => ({
+    params: { id: link.id },
+    props: { affiliate: link },
+  }));
+}
+
+const { affiliate } = Astro.props;
+---
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${affiliate.url}`} />
+    <title>Redirecting to {affiliate.productName}</title>
+    <link rel="canonical" href={affiliate.url} />
+  </head>
+  <body>
+    <p>Redirecting to <a href={affiliate.url}>{affiliate.productName}</a>...</p>
+  </body>
+</html>

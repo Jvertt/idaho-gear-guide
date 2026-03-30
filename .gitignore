@@ -1,0 +1,18 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+
+# env
+.env
+.env.*
+!.env.example
+
+# astro
+.astro/
+
+# OS / editor
+.DS_Store
+*.log

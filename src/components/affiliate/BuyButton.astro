@@ -1,0 +1,42 @@
+---
+import { getCloakedUrl, getAffiliateLink, formatPrice } from '../../utils/affiliates';
+
+export interface Props {
+  affiliateId: string;
+  label?: string;
+  variant?: 'primary' | 'secondary' | 'compact';
+  showPrice?: boolean;
+}
+
+const { affiliateId, label, variant = 'primary', showPrice = true } = Astro.props;
+
+const affiliate = getAffiliateLink(affiliateId);
+const url = getCloakedUrl(affiliateId);
+
+const baseClasses = 'inline-flex items-center justify-center gap-2 font-mono text-sm font-semibold tracking-wide uppercase transition-all duration-200 rounded-lg';
+
+const variantClasses = {
+  primary: 'bg-amber hover:bg-gold text-pine px-6 py-3 shadow-sm hover:shadow-md',
+  secondary: 'bg-forest hover:bg-sage text-cream px-5 py-2.5 border border-sage/30',
+  compact: 'bg-amber hover:bg-gold text-pine px-4 py-2 text-xs',
+};
+---
+
+{affiliate && (
+  <a
+    href={url}
+    class:list={[baseClasses, variantClasses[variant]]}
+    target="_blank"
+    rel="nofollow noopener sponsored"
+    data-affiliate-id={affiliateId}
+    onclick={`console.log('[affiliate-click] ${affiliateId}')`}
+  >
+    {label || 'Check Price'}
+    {showPrice && variant !== 'compact' && (
+      <span class="opacity-80">— {formatPrice(affiliate.price)}</span>
+    )}
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg>
+  </a>
+)}

@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EmailCapture from '../components/email/EmailCapture.astro';
+import { buildBreadcrumbSchema } from '../utils/schema';
+
+const breadcrumbs = buildBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Newsletter', url: '/newsletter' },
+]);
+---
+
+<BaseLayout
+  title="Newsletter — Idaho Gear Guide"
+  description="Join 2,000+ North Idaho outdoor enthusiasts. Weekly gear tips, trail reports, seasonal guides, and exclusive deals delivered to your inbox."
+  canonical="https://idahogearguide.com/newsletter"
+  jsonLd={breadcrumbs}
+>
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12">
+      <span class="text-4xl mb-4 block">📬</span>
+      <h1 class="font-display text-4xl text-ink font-bold mb-4">The North Idaho Outdoor Newsletter</h1>
+      <p class="font-body text-lg text-stone leading-relaxed max-w-xl mx-auto">
+        A weekly email for people who'd rather be outside in North Idaho. Gear reviews, trail conditions, fishing reports, and seasonal tips — written by locals, for locals.
+      </p>
+    </div>
+
+    <EmailCapture variant="popup" leadMagnet="North Idaho Outdoor Gear Checklist" />
+
+    <div class="mt-12 space-y-6">
+      <h2 class="font-display text-2xl text-ink font-bold text-center">What You'll Get</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white border border-mist rounded-xl p-5">
+          <span class="text-2xl block mb-2">🎣</span>
+          <h3 class="font-display text-lg text-ink font-semibold mb-1">Gear Reviews</h3>
+          <p class="font-body text-sm text-stone">Honest, field-tested reviews of outdoor gear specific to North Idaho conditions.</p>
+        </div>
+        <div class="bg-white border border-mist rounded-xl p-5">
+          <span class="text-2xl block mb-2">🗺️</span>
+          <h3 class="font-display text-lg text-ink font-semibold mb-1">Trail Reports</h3>
+          <p class="font-body text-sm text-stone">Current conditions on popular North Idaho trails, updated weekly during hiking season.</p>
+        </div>
+        <div class="bg-white border border-mist rounded-xl p-5">
+          <span class="text-2xl block mb-2">🌤️</span>
+          <h3 class="font-display text-lg text-ink font-semibold mb-1">Seasonal Guides</h3>
+          <p class="font-body text-sm text-stone">What to do and where to go each season, from ice fishing to summer paddling.</p>
+        </div>
+        <div class="bg-white border border-mist rounded-xl p-5">
+          <span class="text-2xl block mb-2">💰</span>
+          <h3 class="font-display text-lg text-ink font-semibold mb-1">Exclusive Deals</h3>
+          <p class="font-body text-sm text-stone">Subscriber-only discounts and early access to sales from our affiliate partners.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

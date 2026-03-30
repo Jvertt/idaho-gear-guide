@@ -1,0 +1,49 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-pine border-t border-forest/50 mt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-2xl">🏔️</span>
+          <span class="font-display text-xl text-cream font-bold">Idaho Gear Guide</span>
+        </div>
+        <p class="font-body text-sm text-sage leading-relaxed max-w-md">
+          Honest, locally-tested gear recommendations for North Idaho's outdoor enthusiasts. We paddle the lakes, hike the trails, and fish the rivers so you can gear up with confidence.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-mono text-xs text-gold uppercase tracking-wider mb-3">Explore</h4>
+        <ul class="space-y-2">
+          <li><a href="/gear-picks" class="font-body text-sm text-moss hover:text-cream transition-colors">Gear Picks</a></li>
+          <li><a href="/coeur-dalene" class="font-body text-sm text-moss hover:text-cream transition-colors">Coeur d'Alene</a></li>
+          <li><a href="/sandpoint" class="font-body text-sm text-moss hover:text-cream transition-colors">Sandpoint</a></li>
+          <li><a href="/priest-lake" class="font-body text-sm text-moss hover:text-cream transition-colors">Priest Lake</a></li>
+          <li><a href="/schweitzer-mountain" class="font-body text-sm text-moss hover:text-cream transition-colors">Schweitzer</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-mono text-xs text-gold uppercase tracking-wider mb-3">Resources</h4>
+        <ul class="space-y-2">
+          <li><a href="/about" class="font-body text-sm text-moss hover:text-cream transition-colors">About</a></li>
+          <li><a href="/newsletter" class="font-body text-sm text-moss hover:text-cream transition-colors">Newsletter</a></li>
+          <li><a href="/guides/lake-coeur-dalene-summer-outdoor-guide" class="font-body text-sm text-moss hover:text-cream transition-colors">Summer Guide</a></li>
+          <li><a href="/guides/best-fishing-spots-lake-coeur-dalene" class="font-body text-sm text-moss hover:text-cream transition-colors">Fishing Guide</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-forest/50 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p class="font-mono text-xs text-sage">
+        &copy; {currentYear} Idaho Gear Guide. All rights reserved.
+      </p>
+      <p class="font-body text-xs text-sage/70">
+        Affiliate disclosure: We earn commissions from qualifying purchases. This doesn't affect our recommendations.
+      </p>
+    </div>
+  </div>
+</footer>

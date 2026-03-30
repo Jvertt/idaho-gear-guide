@@ -1,0 +1,58 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  ogUrl?: string;
+  ogType?: string;
+  twitterCard?: string;
+  jsonLd?: string | string[];
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogTitle = title,
+  ogDescription = description,
+  ogImage = 'https://idahogearguide.com/og-default.jpg',
+  ogUrl = canonical,
+  ogType = 'website',
+  twitterCard = 'summary_large_image',
+  jsonLd,
+} = Astro.props;
+
+const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Open Graph -->
+<meta property="og:title" content={ogTitle} />
+<meta property="og:description" content={ogDescription} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:url" content={ogUrl} />
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content="Idaho Gear Guide" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content={twitterCard} />
+<meta name="twitter:title" content={ogTitle} />
+<meta name="twitter:description" content={ogDescription} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- JSON-LD -->
+{jsonLdArray.map((ld) => (
+  <script type="application/ld+json" set:html={ld} />
+))}
+
+<slot name="head" />

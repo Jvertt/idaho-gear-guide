@@ -1,0 +1,59 @@
+---
+import { buildFAQSchema } from '../../utils/schema';
+
+export interface Props {
+  questions: { q: string; a: string }[];
+}
+
+const { questions } = Astro.props;
+const faqSchema = buildFAQSchema(questions);
+---
+
+<section class="mt-12 mb-8">
+  <h2 class="font-display text-2xl text-ink font-bold mb-6">Frequently Asked Questions</h2>
+
+  <div class="space-y-3" id="faq-accordion">
+    {questions.map((faq, i) => (
+      <div class="border border-mist rounded-lg overflow-hidden">
+        <button
+          class="w-full flex items-center justify-between p-4 text-left hover:bg-mist/30 transition-colors faq-toggle"
+          data-faq-index={i}
+          aria-expanded="false"
+        >
+          <span class="font-body text-sm font-semibold text-ink pr-4">{faq.q}</span>
+          <svg class="w-5 h-5 text-stone flex-shrink-0 faq-chevron transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="hidden faq-content" data-faq-content={i}>
+          <div class="px-4 pb-4 font-body text-sm text-ink/80 leading-relaxed">
+            {faq.a}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script type="application/ld+json" set:html={faqSchema} />
+
+<script>
+  document.querySelectorAll('.faq-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const index = (btn as HTMLElement).dataset.faqIndex;
+      const content = document.querySelector(`[data-faq-content="${index}"]`);
+      const chevron = btn.querySelector('.faq-chevron');
+      const isOpen = !content?.classList.contains('hidden');
+
+      document.querySelectorAll('.faq-content').forEach((c) => c.classList.add('hidden'));
+      document.querySelectorAll('.faq-chevron').forEach((c) => c.classList.remove('rotate-180'));
+      document.querySelectorAll('.faq-toggle').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+
+      if (!isOpen) {
+        content?.classList.remove('hidden');
+        chevron?.classList.add('rotate-180');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+</script>

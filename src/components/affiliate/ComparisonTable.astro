@@ -1,0 +1,112 @@
+---
+import BuyButton from './BuyButton.astro';
+import { getAffiliateLink, formatPrice, getPriceRangeLabel } from '../../utils/affiliates';
+import { getProductByAffiliateId } from '../../data/products';
+
+export interface Props {
+  affiliateIds: string[];
+  categories?: string[];
+}
+
+const { affiliateIds, categories } = Astro.props;
+
+const items = affiliateIds.map((id) => ({
+  affiliate: getAffiliateLink(id),
+  product: getProductByAffiliateId(id),
+})).filter((item) => item.affiliate && item.product);
+
+const specKeys = categories || (items.length > 0
+  ? Object.keys(items[0].product!.specs)
+  : []);
+
+const bestValueIndex = items.findIndex((item) => item.affiliate?.priceRange === 'mid');
+---
+
+<div class="overflow-x-auto -mx-4 sm:mx-0">
+  <table class="w-full min-w-[600px] border-collapse">
+    <thead>
+      <tr>
+        <th class="text-left font-mono text-xs text-stone uppercase tracking-wider p-3 bg-mist/50 rounded-tl-lg">&nbsp;</th>
+        {items.map((item, i) => (
+          <th class:list={[
+            'text-center p-3 bg-mist/50',
+            i === items.length - 1 && 'rounded-tr-lg',
+            i === bestValueIndex && 'bg-gold/10 ring-2 ring-gold/30 ring-inset',
+          ]}>
+            {i === bestValueIndex && (
+              <span class="font-mono text-xs bg-gold text-pine px-2 py-0.5 rounded-full mb-1 inline-block">Best Value</span>
+            )}
+            <span class="font-display text-sm font-semibold text-ink block">{item.affiliate?.productName}</span>
+            <span class:list={['font-mono text-xs mt-1 inline-block px-2 py-0.5 rounded-full border',
+              item.affiliate?.priceRange === 'budget' ? 'bg-sage/20 text-sage border-sage/30' :
+              item.affiliate?.priceRange === 'mid' ? 'bg-gold/20 text-gold border-gold/30' :
+              'bg-amber/20 text-amber border-amber/30'
+            ]}>
+              {getPriceRangeLabel(item.affiliate?.priceRange || 'mid')}
+            </span>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="border-b border-mist">
+        <td class="font-mono text-xs text-stone uppercase p-3">Price</td>
+        {items.map((item, i) => (
+          <td class:list={[
+            'text-center p-3 font-display text-lg font-bold text-pine',
+            i === bestValueIndex && 'bg-gold/5',
+          ]}>
+            {formatPrice(item.affiliate?.price || 0)}
+          </td>
+        ))}
+      </tr>
+      <tr class="border-b border-mist">
+        <td class="font-mono text-xs text-stone uppercase p-3">Rating</td>
+        {items.map((item, i) => (
+          <td class:list={[
+            'text-center p-3',
+            i === bestValueIndex && 'bg-gold/5',
+          ]}>
+            <span class="text-amber text-sm">{Array.from({ length: 5 }, (_, j) => j < Math.round(item.product?.rating || 0) ? '★' : '☆').join('')}</span>
+            <span class="font-mono text-xs text-stone block">{item.product?.rating}/5</span>
+          </td>
+        ))}
+      </tr>
+      {specKeys.map((key) => (
+        <tr class="border-b border-mist">
+          <td class="font-mono text-xs text-stone uppercase p-3">{key}</td>
+          {items.map((item, i) => (
+            <td class:list={[
+              'text-center p-3 font-body text-sm text-ink',
+              i === bestValueIndex && 'bg-gold/5',
+            ]}>
+              {item.product?.specs[key] || '—'}
+            </td>
+          ))}
+        </tr>
+      ))}
+      <tr class="border-b border-mist">
+        <td class="font-mono text-xs text-stone uppercase p-3">Best For</td>
+        {items.map((item, i) => (
+          <td class:list={[
+            'text-center p-3 font-body text-sm text-ink/80',
+            i === bestValueIndex && 'bg-gold/5',
+          ]}>
+            {item.product?.bestFor}
+          </td>
+        ))}
+      </tr>
+      <tr>
+        <td class="p-3">&nbsp;</td>
+        {items.map((item, i) => (
+          <td class:list={[
+            'text-center p-3',
+            i === bestValueIndex && 'bg-gold/5',
+          ]}>
+            <BuyButton affiliateId={item.affiliate?.id || ''} variant="compact" />
+          </td>
+        ))}
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,26 @@
+---
+export interface Props {
+  seasons: ('spring' | 'summer' | 'fall' | 'winter')[];
+}
+
+const { seasons } = Astro.props;
+
+const seasonConfig = {
+  spring: { icon: '🌱', color: 'bg-sage/20 text-sage border-sage/30' },
+  summer: { icon: '☀️', color: 'bg-gold/20 text-amber border-gold/30' },
+  fall: { icon: '🍂', color: 'bg-amber/20 text-stone border-amber/30' },
+  winter: { icon: '❄️', color: 'bg-mist text-pine border-pine/20' },
+};
+---
+
+<div class="flex flex-wrap gap-2">
+  {seasons.map((season) => (
+    <span class:list={[
+      'inline-flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-full border',
+      seasonConfig[season].color,
+    ]}>
+      <span>{seasonConfig[season].icon}</span>
+      <span class="capitalize">{season}</span>
+    </span>
+  ))}
+</div>

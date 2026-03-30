@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/affiliate/ProductCard.astro';
+import EmailCapture from '../components/email/EmailCapture.astro';
+import { buildBreadcrumbSchema } from '../utils/schema';
+
+const breadcrumbs = buildBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Gear Picks', url: '/gear-picks' },
+]);
+
+const categories = [
+  { label: 'Coolers', category: 'cooler', ids: ['yeti-tundra-45', 'rtic-45-cooler', 'coleman-xtreme-52qt'] },
+  { label: 'Fly Rods', category: 'fly-rod', ids: ['orvis-clearwater-fly-rod', 'redington-classic-trout', 'sage-foundation-fly-rod'] },
+  { label: 'Hiking Boots', category: 'hiking-boots', ids: ['salomon-x-ultra-4-gtx', 'merrell-moab-3-mid-wp', 'lowa-renegade-gtx-mid'] },
+  { label: 'Backpacks', category: 'backpack', ids: ['osprey-atmos-50', 'gregory-baltoro-65', 'deuter-trail-30'] },
+  { label: 'Kayaks', category: 'kayak', ids: ['perception-pescador-12', 'wilderness-systems-pungo-125', 'pelican-mustang-100x', 'intex-explorer-k2'] },
+  { label: 'Waders', category: 'waders', ids: ['simms-freestone-waders', 'simms-g3-guide-waders', 'frogg-toggs-canyon-ii'] },
+  { label: 'Tents', category: 'tent', ids: ['big-agnes-copper-spur-hv-ul2', 'kelty-late-start-2'] },
+  { label: 'Sleeping Bags', category: 'sleeping-bag', ids: ['kelty-cosmic-20', 'western-mountaineering-alpinlite'] },
+  { label: 'Trekking Poles', category: 'trekking-poles', ids: ['black-diamond-distance-z', 'leki-makalu-fx-carbon', 'cascade-mountain-tech-carbon'] },
+  { label: 'Skis', category: 'skis', ids: ['rossignol-experience-82', 'volkl-blaze-94'] },
+  { label: 'Ski Helmets', category: 'ski-helmet', ids: ['smith-vantage-mips'] },
+  { label: 'SUP Boards', category: 'sup-board', ids: ['irocker-cruiser-106'] },
+];
+---
+
+<BaseLayout
+  title="Top Gear Picks for North Idaho — Idaho Gear Guide"
+  description="Our curated selection of the best outdoor gear for North Idaho adventures. Coolers, fly rods, hiking boots, kayaks, and more — tested locally."
+  canonical="https://idahogearguide.com/gear-picks"
+  jsonLd={breadcrumbs}
+>
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+      <span class="font-mono text-xs text-amber uppercase tracking-[0.15em]">Curated for North Idaho</span>
+      <h1 class="font-display text-4xl text-ink font-bold mt-2 mb-4">Top Gear Picks</h1>
+      <p class="font-body text-lg text-stone max-w-2xl mx-auto">
+        Every product on this page has been tested in North Idaho conditions. We organize by category with budget, mid-range, and premium options so you can find the right fit.
+      </p>
+    </div>
+
+    {categories.map((cat) => (
+      <div class="mb-14">
+        <h2 class="font-display text-2xl text-ink font-bold mb-6 pb-2 border-b border-mist">{cat.label}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {cat.ids.map((id) => (
+            <ProductCard affiliateId={id} showSpecs={true} />
+          ))}
+        </div>
+      </div>
+    ))}
+
+    <EmailCapture variant="inline" leadMagnet="Complete Idaho Gear Checklist PDF" />
+  </section>
+</BaseLayout>

@@ -1,0 +1,48 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { buildBreadcrumbSchema } from '../utils/schema';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  ogUrl?: string;
+  ogType?: string;
+  twitterCard?: string;
+  jsonLd?: string | string[];
+  breadcrumbs: { name: string; url: string }[];
+}
+
+const { breadcrumbs, jsonLd, ...seoProps } = Astro.props;
+
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs);
+const allJsonLd = jsonLd
+  ? Array.isArray(jsonLd)
+    ? [breadcrumbSchema, ...jsonLd]
+    : [breadcrumbSchema, jsonLd]
+  : [breadcrumbSchema];
+---
+
+<BaseLayout {...seoProps} jsonLd={allJsonLd}>
+  <slot name="head" slot="head" />
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <nav class="mb-6" aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-1 font-mono text-xs text-stone">
+        {breadcrumbs.map((crumb, i) => (
+          <li class="flex items-center gap-1">
+            {i > 0 && <span class="text-sage/50">/</span>}
+            {i < breadcrumbs.length - 1 ? (
+              <a href={crumb.url} class="hover:text-amber transition-colors">{crumb.name}</a>
+            ) : (
+              <span class="text-ink/60">{crumb.name}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+    <slot />
+  </article>
+</BaseLayout>

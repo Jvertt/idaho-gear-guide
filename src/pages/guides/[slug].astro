@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import ReviewLayout from '../../layouts/ReviewLayout.astro';
+import EmailCapture from '../../components/email/EmailCapture.astro';
+import { generateGuideSEO } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await guide.render();
+
+const seo = generateGuideSEO(
+  guide.data.title,
+  guide.slug,
+  guide.data.description
+);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Guides', url: '/' },
+  { name: guide.data.title, url: `/guides/${guide.slug}` },
+];
+---
+
+<ReviewLayout
+  {...seo}
+  breadcrumbs={breadcrumbs}
+>
+  <header class="mb-8">
+    <div class="flex flex-wrap items-center gap-3 mb-3">
+      <span class="font-mono text-xs bg-amber/20 text-amber px-2.5 py-1 rounded-full capitalize">{guide.data.season}</span>
+      <span class="font-mono text-xs text-stone">{guide.data.location}</span>
+      <span class="font-mono text-xs text-stone">Published {guide.data.publishDate}</span>
+    </div>
+    <h1 class="font-display text-3xl md:text-4xl text-ink font-bold mb-3">{guide.data.title}</h1>
+    <p class="font-body text-stone leading-relaxed">{guide.data.description}</p>
+  </header>
+
+  <Content />
+
+  <div class="mt-12">
+    <EmailCapture variant="inline" leadMagnet={`${guide.data.title} PDF`} />
+  </div>
+</ReviewLayout>

@@ -1,0 +1,63 @@
+---
+import BuyButton from './BuyButton.astro';
+import { getAffiliateLink, formatPrice } from '../../utils/affiliates';
+import { getProductByAffiliateId } from '../../data/products';
+
+export interface Props {
+  affiliateId: string;
+  score: number;
+}
+
+const { affiliateId, score } = Astro.props;
+
+const affiliate = getAffiliateLink(affiliateId);
+const product = getProductByAffiliateId(affiliateId);
+
+if (!affiliate || !product) return;
+
+const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(score) ? '★' : '☆').join('');
+const scoreLabel = score >= 4.5 ? 'Excellent' : score >= 4.0 ? 'Great' : score >= 3.5 ? 'Good' : 'Fair';
+---
+
+<div class="bg-cream border-2 border-amber/30 rounded-xl p-6 mb-8">
+  <div class="flex items-start justify-between gap-4 flex-wrap">
+    <div>
+      <span class="font-mono text-xs text-amber uppercase tracking-wider">Our Verdict</span>
+      <h3 class="font-display text-xl text-ink font-bold mt-1">{affiliate.productName}</h3>
+    </div>
+    <div class="text-center">
+      <div class="text-amber text-xl tracking-wider">{stars}</div>
+      <span class="font-mono text-xs text-stone">{score}/5 — {scoreLabel}</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+    <div>
+      <h4 class="font-mono text-xs text-sage uppercase tracking-wider mb-2">Pros</h4>
+      <ul class="space-y-1">
+        {product.pros.slice(0, 3).map((pro) => (
+          <li class="flex items-start gap-2 text-sm font-body text-ink/80">
+            <span class="text-sage flex-shrink-0">✓</span>
+            <span>{pro}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-mono text-xs text-amber uppercase tracking-wider mb-2">Cons</h4>
+      <ul class="space-y-1">
+        {product.cons.slice(0, 3).map((con) => (
+          <li class="flex items-start gap-2 text-sm font-body text-ink/80">
+            <span class="text-amber flex-shrink-0">✗</span>
+            <span>{con}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between mt-5 pt-4 border-t border-amber/20">
+    <span class="font-display text-2xl font-bold text-pine">{formatPrice(affiliate.price)}</span>
+    <BuyButton affiliateId={affiliateId} label="Check Price" variant="primary" showPrice={false} />
+  </div>
+</div>

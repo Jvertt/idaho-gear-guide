@@ -1,0 +1,23 @@
+---
+export interface Props {
+  locationName: string;
+  tips: string[];
+}
+
+const { locationName, tips } = Astro.props;
+---
+
+<div class="bg-forest/5 border border-forest/20 rounded-xl p-6 my-8">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-xl">📍</span>
+    <h3 class="font-display text-lg text-pine font-semibold">Local Tips — {locationName}</h3>
+  </div>
+  <ul class="space-y-3">
+    {tips.map((tip) => (
+      <li class="flex items-start gap-3">
+        <span class="text-sage text-lg flex-shrink-0 mt-0.5">→</span>
+        <p class="font-body text-sm text-ink/85 leading-relaxed">{tip}</p>
+      </li>
+    ))}
+  </ul>
+</div>

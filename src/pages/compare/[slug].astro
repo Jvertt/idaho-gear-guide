@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import ReviewLayout from '../../layouts/ReviewLayout.astro';
+import ComparisonTable from '../../components/affiliate/ComparisonTable.astro';
+import VerdictBox from '../../components/affiliate/VerdictBox.astro';
+import { generateCompareSEO } from '../../utils/seo';
+import { getProductByAffiliateId } from '../../data/products';
+
+export async function getStaticPaths() {
+  const comparisons = await getCollection('comparisons');
+  return comparisons.map((comp) => ({
+    params: { slug: comp.slug },
+    props: { comparison: comp },
+  }));
+}
+
+const { comparison } = Astro.props;
+const { Content } = await comparison.render();
+
+const seo = generateCompareSEO(
+  comparison.data.title,
+  comparison.slug,
+  comparison.data.description
+);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Compare', url: '/gear-picks' },
+  { name: comparison.data.title, url: `/compare/${comparison.slug}` },
+];
+---
+
+<ReviewLayout
+  {...seo}
+  breadcrumbs={breadcrumbs}
+>
+  <h1 class="font-display text-3xl md:text-4xl text-ink font-bold mb-3">{comparison.data.title}</h1>
+  <p class="font-body text-stone leading-relaxed mb-8">{comparison.data.description}</p>
+
+  <!-- Comparison Table -->
+  <section class="mb-10">
+    <ComparisonTable affiliateIds={comparison.data.affiliateIds} />
+  </section>
+
+  <!-- Verdict Boxes -->
+  <section class="mb-10 space-y-6">
+    {comparison.data.affiliateIds.map((id: string) => {
+      const product = getProductByAffiliateId(id);
+      return product ? <VerdictBox affiliateId={id} score={product.rating} /> : null;
+    })}
+  </section>
+
+  <!-- Content -->
+  <Content />
+</ReviewLayout>

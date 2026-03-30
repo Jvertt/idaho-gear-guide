@@ -1,0 +1,72 @@
+---
+import BuyButton from './BuyButton.astro';
+import { getAffiliateLink, getPriceRangeLabel, formatPrice } from '../../utils/affiliates';
+import { getProductByAffiliateId } from '../../data/products';
+
+export interface Props {
+  affiliateId: string;
+  showSpecs?: boolean;
+  tier?: 'budget' | 'mid' | 'premium';
+}
+
+const { affiliateId, showSpecs = false, tier } = Astro.props;
+
+const affiliate = getAffiliateLink(affiliateId);
+const product = getProductByAffiliateId(affiliateId);
+
+if (!affiliate || !product) return;
+
+const displayTier = tier || affiliate.priceRange;
+const tierColors = {
+  budget: 'bg-sage/20 text-sage border-sage/30',
+  mid: 'bg-gold/20 text-gold border-gold/30',
+  premium: 'bg-amber/20 text-amber border-amber/30',
+};
+
+const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(product.rating) ? '★' : '☆').join('');
+---
+
+<div class="bg-white border border-mist rounded-xl p-5 hover:border-sage/50 transition-colors">
+  <div class="flex items-start justify-between gap-3 mb-3">
+    <div>
+      <span class:list={['font-mono text-xs px-2 py-0.5 rounded-full border', tierColors[displayTier]]}>
+        {getPriceRangeLabel(displayTier)}
+      </span>
+    </div>
+    <span class="font-display text-lg font-bold text-pine">{formatPrice(affiliate.price)}</span>
+  </div>
+
+  <h3 class="font-display text-lg text-ink font-semibold mb-2 leading-snug">{affiliate.productName}</h3>
+
+  <div class="flex items-center gap-1 mb-3">
+    <span class="text-amber text-sm tracking-wider">{stars}</span>
+    <span class="font-mono text-xs text-stone">{product.rating}/5</span>
+  </div>
+
+  <ul class="space-y-1 mb-4">
+    {product.pros.slice(0, 3).map((pro) => (
+      <li class="flex items-start gap-2 text-sm font-body text-ink/80">
+        <span class="text-sage mt-0.5 flex-shrink-0">✓</span>
+        <span>{pro}</span>
+      </li>
+    ))}
+  </ul>
+
+  {showSpecs && (
+    <div class="border-t border-mist pt-3 mb-4">
+      <dl class="grid grid-cols-2 gap-x-4 gap-y-1">
+        {Object.entries(product.specs).slice(0, 4).map(([key, value]) => (
+          <div class="flex flex-col">
+            <dt class="font-mono text-xs text-stone uppercase">{key}</dt>
+            <dd class="font-body text-sm text-ink">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )}
+
+  <div class="flex items-center gap-3">
+    <BuyButton affiliateId={affiliateId} variant="primary" showPrice={false} />
+    <span class="font-mono text-xs text-stone">via {affiliate.program}</span>
+  </div>
+</div>

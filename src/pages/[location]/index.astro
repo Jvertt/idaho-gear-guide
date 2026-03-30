@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/affiliate/ProductCard.astro';
+import SeasonalBadge from '../../components/content/SeasonalBadge.astro';
+import EmailCapture from '../../components/email/EmailCapture.astro';
+import { locations } from '../../data/locations';
+import { getActivityBySlug } from '../../data/activities';
+import { generateLocationSEO } from '../../utils/seo';
+import { buildBreadcrumbSchema } from '../../utils/schema';
+
+export function getStaticPaths() {
+  return locations.map((loc) => ({
+    params: { location: loc.slug },
+    props: { location: loc },
+  }));
+}
+
+const { location } = Astro.props;
+
+const seo = generateLocationSEO(location);
+const breadcrumbs = buildBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: location.name, url: `/${location.slug}` },
+]);
+
+const locationActivities = location.activities
+  .map((slug: string) => getActivityBySlug(slug))
+  .filter(Boolean);
+
+const gearPickMap: Record<string, string[]> = {
+  'coeur-dalene': ['orvis-clearwater-fly-rod', 'perception-pescador-12', 'salomon-x-ultra-4-gtx'],
+  'sandpoint': ['rossignol-experience-82', 'osprey-atmos-50', 'wilderness-systems-pungo-125'],
+  'priest-lake': ['yeti-tundra-45', 'big-agnes-copper-spur-hv-ul2', 'irocker-cruiser-106'],
+  'schweitzer-mountain': ['rossignol-experience-82', 'smith-vantage-mips', 'volkl-blaze-94'],
+  'lake-pend-oreille': ['perception-pescador-12', 'simms-freestone-waders', 'yeti-tundra-45'],
+};
+const gearPicks = gearPickMap[location.slug] || ['yeti-tundra-45', 'osprey-atmos-50', 'salomon-x-ultra-4-gtx'];
+
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const seasonMonths: Record<string, number[]> = {
+  spring: [3, 4, 5],
+  summer: [6, 7, 8],
+  fall: [9, 10, 11],
+  winter: [12, 1, 2],
+};
+const bestMonthSet = new Set(location.bestSeason.flatMap((s: string) => seasonMonths[s] || []));
+---
+
+<BaseLayout {...seo} jsonLd={breadcrumbs}>
+  <section class="relative text-cream">
+    <div class="absolute inset-0 z-0">
+      <img
+        src={location.image.url}
+        alt={location.image.alt}
+        class="w-full h-full object-cover"
+        loading="eager"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-pine via-pine/70 to-pine/30" />
+    </div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-14">
+      <nav class="mb-4" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1 font-mono text-xs text-sage">
+          <li><a href="/" class="hover:text-gold transition-colors">Home</a></li>
+          <li class="text-sage/50">/</li>
+          <li class="text-cream/60">{location.name}</li>
+        </ol>
+      </nav>
+      <h1 class="font-display text-3xl md:text-4xl font-bold mb-4 drop-shadow-lg">Outdoor Gear Guide for {location.name}</h1>
+      <p class="font-body text-sage leading-relaxed max-w-2xl mb-4">{location.description}</p>
+      <SeasonalBadge seasons={location.bestSeason} />
+      <p class="mt-6 font-mono text-[10px] text-cream/40">
+        Photo by <a href={location.image.creditUrl} target="_blank" rel="noopener noreferrer" class="underline hover:text-cream/60">{location.image.credit}</a> on <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" class="underline hover:text-cream/60">Unsplash</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Highlights -->
+    <section class="mb-12">
+      <h2 class="font-display text-2xl text-ink font-bold mb-4">Highlights</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {location.highlights.map((h: string) => (
+          <div class="flex items-start gap-3 bg-white border border-mist rounded-lg p-4">
+            <span class="text-sage text-lg flex-shrink-0">✦</span>
+            <p class="font-body text-sm text-ink/85">{h}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Activities Grid -->
+    <section class="mb-12">
+      <h2 class="font-display text-2xl text-ink font-bold mb-6">Activities at {location.name}</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {locationActivities.map((activity: any) => (
+          <a
+            href={`/${location.slug}/${activity.slug}`}
+            class="group bg-white border border-mist rounded-xl p-4 hover:border-sage/50 hover:shadow-sm transition-all text-center"
+          >
+            <span class="text-3xl block mb-2">{activity.icon}</span>
+            <h3 class="font-display text-sm text-ink font-semibold group-hover:text-amber transition-colors">{activity.name}</h3>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Seasonal Calendar -->
+    <section class="mb-12">
+      <h2 class="font-display text-2xl text-ink font-bold mb-4">Best Times to Visit</h2>
+      <div class="grid grid-cols-6 md:grid-cols-12 gap-1">
+        {months.map((month, i) => (
+          <div class:list={[
+            'text-center py-3 rounded-lg font-mono text-xs',
+            bestMonthSet.has(i + 1)
+              ? 'bg-amber/20 text-amber border border-amber/30 font-semibold'
+              : 'bg-mist/50 text-stone',
+          ]}>
+            {month}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Gear Picks -->
+    <section class="mb-12">
+      <h2 class="font-display text-2xl text-ink font-bold mb-6">Featured Gear for {location.name}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {gearPicks.map((id: string) => (
+          <ProductCard affiliateId={id} />
+        ))}
+      </div>
+    </section>
+
+    <EmailCapture variant="inline" leadMagnet={`${location.name} Gear Checklist`} />
+  </div>
+</BaseLayout>
